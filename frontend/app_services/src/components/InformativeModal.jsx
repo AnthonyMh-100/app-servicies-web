@@ -15,9 +15,9 @@ export const InformativeModal = ({
 
         <Content>{description}</Content>
 
-        {/* <Footer>
+        <Footer>
           <CloseButton onClick={onClose}>Cerrar</CloseButton>
-        </Footer> */}
+        </Footer>
       </Card>
     </Overlay>
   );

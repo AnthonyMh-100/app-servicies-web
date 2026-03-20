@@ -18,12 +18,11 @@ import {
   maxLength,
 } from "../../utils/utils";
 import { ServiceModal } from "./ServiceModal";
-import moment from "moment";
 import { MAX_LENGTH } from "../../utils/constants";
 
 const { ALL, PAID, UNPAID } = KEYS_FILTERS;
 
-export const Services = () => {
+export const Services = ({ dateFilter, setDateFilter }) => {
   const [selectedFilter, setSelectedFilter] = useState(ALL);
   const [serviceInfoEdit, setServiceInfoEdit] = useState({});
   const [showInformative, setShowInformative] = useState(false);
@@ -33,7 +32,6 @@ export const Services = () => {
   const [search, setSearch] = useState("");
   const [deletedServiceId, setDeletedServiceId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [dateFilter, setDateFilter] = useState(moment().format("YYYY-MM-DD"));
 
   const variablesQuery = {
     date: dateFilter,
