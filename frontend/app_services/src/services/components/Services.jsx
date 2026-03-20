@@ -7,14 +7,24 @@ import {
   TableService,
   InformativeModal,
 } from "../../components";
-import { COLUMNS_SERVICES, SERVICE_FILTERS } from "../../Constants";
-import { formatterCurrency, maxLength } from "../../utils/utils";
+import {
+  COLUMNS_SERVICES,
+  KEYS_FILTERS,
+  SERVICE_FILTERS,
+} from "../../Constants";
+import {
+  filterAndSearchServices,
+  formatterCurrency,
+  maxLength,
+} from "../../utils/utils";
 import { ServiceModal } from "./ServiceModal";
 import moment from "moment";
 import { MAX_LENGTH } from "../../utils/constants";
 
+const { ALL, PAID, UNPAID } = KEYS_FILTERS;
+
 export const Services = () => {
-  const [selectedFilter, setSelectedFilter] = useState("Todo");
+  const [selectedFilter, setSelectedFilter] = useState(ALL);
   const [serviceInfoEdit, setServiceInfoEdit] = useState({});
   const [showInformative, setShowInformative] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -34,7 +44,6 @@ export const Services = () => {
     handleDeleteService,
     paginatedData,
     observeIntersection,
-    servicesData,
   } = useServices({
     dateFilter,
     shouldFetchServices: true,
@@ -94,10 +103,18 @@ export const Services = () => {
   const servicesFormatted = useMemo(() => {
     if (!paginatedData?.length) return [];
 
-    return paginatedData.map((serviceInfo) => ({
+    const servicesInformation = paginatedData.map((serviceInfo) => ({
       ...serviceInfo,
       status: Number(serviceInfo.total_pending) === 0,
     }));
+
+    return filterAndSearchServices({
+      services: servicesInformation,
+      selectedFilter,
+      search,
+      paidValue: PAID,
+      unpaidValue: UNPAID,
+    });
   }, [paginatedData, selectedFilter, search]);
 
   return (
@@ -112,15 +129,15 @@ export const Services = () => {
 
       <MiddleContainer>
         <FilterGroup>
-          {SERVICE_FILTERS.map((filter) => (
-            <FilterLabel key={filter}>
+          {SERVICE_FILTERS.map(({ key, label }) => (
+            <FilterLabel key={key}>
               <input
                 type="radio"
                 name="service-filter"
-                checked={selectedFilter === filter}
-                onChange={() => setSelectedFilter(filter)}
+                checked={selectedFilter === label}
+                onChange={() => setSelectedFilter(label)}
               />
-              {filter}
+              {label}
             </FilterLabel>
           ))}
         </FilterGroup>

@@ -1,4 +1,8 @@
-export const SERVICE_FILTERS = ["Todo", "Pagados", "No Pagados"];
+export const KEYS_FILTERS = {
+  ALL: "Todo",
+  PAID: "Pagados",
+  UNPAID: "No Pagados",
+};
 
 export const COLUMNS_SERVICES = [
   { key: "id", label: "N°" },
@@ -10,6 +14,11 @@ export const COLUMNS_SERVICES = [
   { key: "total", label: "Total" },
   { key: "status", label: "Estado" },
   { key: "actions", label: "Acciones" },
+];
+export const SERVICE_FILTERS = [
+  { key: 1, label: KEYS_FILTERS.ALL },
+  { key: 2, label: KEYS_FILTERS.PAID },
+  { key: 3, label: KEYS_FILTERS.UNPAID },
 ];
 
 export const SECCTION_LOGIN_KEY = {
