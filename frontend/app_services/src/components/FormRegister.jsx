@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { SECCTION_LOGIN_KEY } from "../Constants";
-const { LOGIN } = SECCTION_LOGIN_KEY;
 import { useServices } from "../services/hooks";
+
+const { LOGIN } = SECCTION_LOGIN_KEY;
 
 export const FormRegister = ({ setTabIndex }) => {
   const [userRegister, setUserRegister] = useState({});
@@ -18,13 +19,15 @@ export const FormRegister = ({ setTabIndex }) => {
 
   return (
     <Card>
-      <Title>Registrar Empresa</Title>
-      <Subtitle>Completa los datos de la empresa</Subtitle>
+      <Header>
+        <Title>Registrar Empresa</Title>
+        <Subtitle>Completa los datos de la empresa</Subtitle>
+      </Header>
 
       <Form onSubmit={(e) => handleSubmitRegister(e, userRegister)}>
         <Input
           type="text"
-          placeholder="Código de la empresa"
+          placeholder={"C\u00F3digo de la empresa"}
           autoComplete="off"
           name="code"
           onChange={handleFieldsUser}
@@ -56,7 +59,7 @@ export const FormRegister = ({ setTabIndex }) => {
 
         <Input
           type="tel"
-          placeholder="Teléfono"
+          placeholder={"Tel\u00E9fono"}
           autoComplete="tel"
           name="phone"
           onChange={handleFieldsUser}
@@ -82,53 +85,92 @@ const fadeIn = keyframes`
     opacity: 1;
     transform: translateY(0) scale(1);
   }
- 
 `;
 
 const Card = styled.div`
-  width: 560px;
-  min-height: 720px;
-  padding: 52px;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.12);
+  width: min(560px, 94vw);
+  padding: 44px 44px 36px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 26px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow:
+    0 34px 80px rgba(17, 24, 39, 0.12),
+    0 8px 24px rgba(17, 24, 39, 0.06);
   display: flex;
   justify-content: center;
   flex-direction: column;
-  gap: 26px;
+  gap: 22px;
   animation: ${fadeIn} 0.6s ease;
+  position: relative;
+
+  @supports (
+    (-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))
+  ) {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    opacity: 0.75;
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.22);
+  }
+`;
+
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+  padding-top: 6px;
 `;
 
 const Title = styled.h1`
   margin: 0;
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 800;
   color: #111827;
   text-align: center;
+  letter-spacing: -0.4px;
 `;
 
 const Subtitle = styled.p`
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
   color: #6b7280;
   text-align: center;
+  line-height: 1.5;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
+  margin-top: 4px;
 `;
 
 const Input = styled.input`
-  padding: 18px 20px;
+  padding: 16px 16px;
   border-radius: 14px;
-  border: 1px solid transparent;
-  background: linear-gradient(180deg, #f9fafb, #f3f4f6);
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
   font-size: 15px;
   color: #111827;
   outline: none;
   transition: all 0.25s ease;
+
+  &:hover {
+    border-color: #d1d5db;
+    background: #ffffff;
+  }
 
   &:focus {
     background: #ffffff;
@@ -142,8 +184,8 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  margin-top: 16px;
-  padding: 18px;
+  margin-top: 12px;
+  padding: 16px;
   border-radius: 16px;
   border: none;
   background: linear-gradient(135deg, #6366f1, #818cf8);
@@ -162,14 +204,21 @@ const Button = styled.button`
     transform: translateY(0);
     box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
   }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 18px 36px rgba(99, 102, 241, 0.34),
+      0 0 0 4px rgba(99, 102, 241, 0.22);
+  }
 `;
 
 const SecondaryButton = styled.button`
-  margin-top: 4px;
-  padding: 16px;
-  border: none;
+  margin-top: 6px;
+  padding: 14px;
+  border: 1px solid rgba(199, 210, 254, 0.95);
   border-radius: 16px;
-  background: #eef2ff;
+  background: rgba(238, 242, 255, 0.75);
   color: #4f46e5;
   font-size: 15px;
   font-weight: 600;
@@ -177,13 +226,18 @@ const SecondaryButton = styled.button`
   transition: all 0.25s ease;
 
   &:hover {
-    background: #e0e7ff;
-    border-color: #a5b4fc;
+    background: rgba(224, 231, 255, 0.85);
+    border-color: rgba(165, 180, 252, 0.95);
     transform: translateY(-1px);
   }
 
   &:active {
     transform: translateY(0);
-    background: #c7d2fe;
+    background: rgba(199, 210, 254, 0.9);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
   }
 `;
