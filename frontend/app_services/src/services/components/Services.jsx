@@ -40,17 +40,14 @@ export const Services = () => {
     withPagination: false,
   };
 
-  const {
-    handleDeleteService,
-    paginatedData,
-    observeIntersection,
-  } = useServices({
-    dateFilter,
-    shouldFetchServices: true,
-    setDeletedServiceId,
-    setShowDeleteModal,
-    variablesQuery,
-  });
+  const { handleDeleteService, paginatedData, observeIntersection } =
+    useServices({
+      dateFilter,
+      shouldFetchServices: true,
+      setDeletedServiceId,
+      setShowDeleteModal,
+      variablesQuery,
+    });
 
   const columnsFormatted = useMemo(() => {
     return COLUMNS_SERVICES.map((column) => ({
@@ -79,6 +76,7 @@ export const Services = () => {
       ...(column.key === "description" && {
         render: ({ description: rowDescription }) => (
           <TextDescription
+            $isMaxlength={rowDescription.length > MAX_LENGTH}
             onClick={() => {
               setShowInformative(true);
               setDescription(rowDescription);
@@ -348,7 +346,7 @@ const CreateButton = styled.button`
 
 const TextDescription = styled.div`
   cursor: pointer;
-  text-align: left;
+  text-align: ${({ $isMaxlength }) => ($isMaxlength ? "left" : "center")};
   max-width: 200px;
 
   &:hover {
