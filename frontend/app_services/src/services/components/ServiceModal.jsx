@@ -40,11 +40,12 @@ export const ServiceModal = ({
       total: Number(serviceInfoEdit?.total) || 0,
       total_advance: Number(serviceInfoEdit?.total_advance) || 0,
       total_pending: Number(serviceInfoEdit?.total_pending) || 0,
+      isCompleted: Boolean(serviceInfoEdit?.isCompleted),
     };
 
     const timeoutId = setTimeout(() => {
       setServiceInfo(baseInfo);
-      setIsPartialPayment(baseInfo.total_pending > 0);
+      setIsPartialPayment(!baseInfo.isCompleted);
     }, 0);
 
     return () => clearTimeout(timeoutId);

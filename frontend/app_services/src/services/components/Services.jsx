@@ -115,7 +115,7 @@ export const Services = ({ dateFilter, setDateFilter }) => {
 
     const servicesInformation = paginatedData.map((serviceInfo) => ({
       ...serviceInfo,
-      status: Number(serviceInfo.total_pending) === 0,
+      status: Boolean(serviceInfo.isCompleted),
     }));
 
     return filterAndSearchServices({
