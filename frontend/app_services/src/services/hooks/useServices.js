@@ -194,7 +194,6 @@ export const useServices = ({
         serviceId,
         serviceInfo: {
           ...serviceInfo,
-          isCompleted: serviceInfo.status,
         },
       },
     });
