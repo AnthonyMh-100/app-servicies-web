@@ -1,13 +1,41 @@
 import { GraphQLError } from "graphql";
 
+export const badUserInputError = (message) =>
+  new GraphQLError(message, {
+    extensions: { code: "BAD_USER_INPUT" },
+  });
+
 export const validateFieldsService = ({ name, description, delivery_date }) => {
-  if (name && !name.trim()) throw new GraphQLError("Field name is required!");
+  if (name && !name.trim())
+    throw badUserInputError("Field name is required!");
 
   if (description && !description.trim())
-    throw new GraphQLError("Field description is required!");
+    throw badUserInputError("Field description is required!");
 
   if (delivery_date && !delivery_date.trim())
-    throw new GraphQLError("Field delivery date is required!");
+    throw badUserInputError("Field delivery date is required!");
+};
+
+export const validatePaymentInfo = ({ paidDate, amount, note } = {}) => {
+  if (!paidDate || !paidDate.toString().trim()) {
+    throw badUserInputError("paidDate is required!");
+  }
+
+  if (amount === undefined || amount === null || amount === "") {
+    throw badUserInputError("amount is required!");
+  }
+
+  const numericAmount = Number(amount);
+  if (Number.isNaN(numericAmount)) {
+    throw badUserInputError("amount must be a number!");
+  }
+  if (numericAmount <= 0) {
+    throw badUserInputError("amount must be greater than 0!");
+  }
+
+  if (note !== undefined && note !== null && !note.toString().trim()) {
+    throw badUserInputError("note cannot be empty!");
+  }
 };
 
 export const filterAndSearchServices = ({

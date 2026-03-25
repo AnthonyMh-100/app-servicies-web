@@ -1,6 +1,6 @@
-import { Service } from "../../models/index.js";
-import { validateFieldsService } from "./utils/utils.js";
-import moment from "moment/moment.js";
+import { Payment, Service } from "../../models/index.js";
+import { validateFieldsService, validatePaymentInfo } from "./utils/utils.js";
+import moment from "moment";
 
 export const serviceMutationsResolver = {
   createService: async (_parent, { serviceInfo }, { id: companyId }) => {
@@ -16,7 +16,42 @@ export const serviceMutationsResolver = {
       companyId,
       isCompleted,
     });
+    const { id: serviceId, total: serviceTotal } = service;
+
+    if (isCompleted) {
+      await Payment.create({
+        serviceId,
+        paidDate: moment().format("YYYY-MM-DD"),
+        amount: serviceTotal || 0,
+      });
+    }
+
     return service;
+  },
+  createServicePayment: async (
+    _parent,
+    { serviceId, paymentInfo },
+    { id: companyId },
+  ) => {
+    validatePaymentInfo(paymentInfo);
+
+    const service = await Service.findOne({
+      where: {
+        id: serviceId,
+        companyId,
+      },
+    });
+
+    if (!service) throw new Error("Service not found!");
+
+    const payment = await Payment.create({
+      serviceId,
+      paidDate: paymentInfo.paidDate,
+      amount: paymentInfo.amount,
+      note: paymentInfo.note ?? null,
+    });
+
+    return payment;
   },
   deleteService: async (_parent, { serviceId }, { id: companyId }) => {
     const service = await Service.findOne({
@@ -76,5 +111,32 @@ export const serviceQueriesResolver = {
     });
 
     return services;
+  },
+  servicePayments: async (_parent, { serviceId }, { id: companyId }) => {
+    const service = await Service.findOne({
+      include: {
+        association: Service.associations.payments,
+      },
+      where: {
+        id: serviceId,
+        companyId,
+      },
+    });
+
+    console.log("servicePayments -> service", JSON.stringify(service, null, 2));
+
+    if (!service) throw new Error("Service not found!");
+
+    const payments = await Payment.findAll({
+      where: {
+        serviceId,
+      },
+      order: [
+        ["paidDate", "DESC"],
+        ["id", "DESC"],
+      ],
+    });
+
+    return payments;
   },
 };

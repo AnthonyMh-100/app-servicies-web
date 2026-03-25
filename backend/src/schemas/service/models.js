@@ -1,4 +1,19 @@
 export const serviceModel = `
+   type Payment {
+        id: Int!
+        paidDate: String!
+        amount: Float!
+        method: String
+        note: String
+        serviceId: Int!
+    }
+
+    input PaymentInfo {
+        paidDate: String!
+        amount: Float!
+        note: String
+    }
+
    type Service {
         id: Int!
         createdDate:String
