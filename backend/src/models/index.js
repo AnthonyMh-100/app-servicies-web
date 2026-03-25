@@ -1,4 +1,5 @@
 import Company from "./Company.js";
+import Payment from "./Payment.js";
 import Service from "./Service.js";
 
 Company.hasMany(Service, {
@@ -19,4 +20,24 @@ Service.belongsTo(Company, {
   },
 });
 
-export { Company, Service };
+Service.hasMany(Payment, {
+  as: "payments",
+  foreignKey: {
+    name: "serviceId",
+    allowNull: false,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  },
+});
+
+Payment.belongsTo(Service, {
+  as: "service",
+  foreignKey: {
+    name: "serviceId",
+    allowNull: false,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  },
+});
+
+export { Company, Payment, Service };
