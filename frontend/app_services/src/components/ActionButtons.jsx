@@ -1,9 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 
-export const ActionButtons = ({ onEdit, onDelete }) => {
+export const ActionButtons = ({ onEdit, onDelete, onPay, onViewPayments }) => {
   return (
     <ButtonContainer>
+      {onPay && <PayButton onClick={onPay}>Pagar</PayButton>}
+      {onViewPayments && (
+        <ViewButton onClick={onViewPayments}>Ver pagos</ViewButton>
+      )}
       <EditButton onClick={onEdit}>Editar</EditButton>
       <DeleteButton onClick={onDelete}>Eliminar</DeleteButton>
     </ButtonContainer>
@@ -12,6 +16,7 @@ export const ActionButtons = ({ onEdit, onDelete }) => {
 
 const ButtonContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 `;
 
@@ -44,6 +49,33 @@ const EditButton = styled(ButtonBase)`
 
   &:active {
     background-color: #3730a3;
+  }
+`;
+
+const PayButton = styled(ButtonBase)`
+  background-color: #10b981;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #059669;
+  }
+
+  &:active {
+    background-color: #047857;
+  }
+`;
+
+const ViewButton = styled(ButtonBase)`
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+
+  &:hover {
+    background-color: #e0e7ff;
+  }
+
+  &:active {
+    background-color: #c7d2fe;
   }
 `;
 

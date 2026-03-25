@@ -18,6 +18,8 @@ import {
   maxLength,
 } from "../../utils/utils";
 import { ServiceModal } from "./ServiceModal";
+import { ServicePaymentModal } from "./ServicePaymentModal";
+import { ServicePaymentsModal } from "./ServicePaymentsModal";
 import { MAX_LENGTH } from "../../utils/constants";
 
 const { ALL, PAID, UNPAID } = KEYS_FILTERS;
@@ -32,6 +34,9 @@ export const Services = ({ dateFilter, setDateFilter }) => {
   const [search, setSearch] = useState("");
   const [deletedServiceId, setDeletedServiceId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPaymentsModal, setShowPaymentsModal] = useState(false);
 
   const variablesQuery = {
     date: dateFilter,
@@ -53,6 +58,18 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       ...(column.key === "actions" && {
         render: (row) => (
           <ActionButtons
+            onPay={
+              row?.status
+                ? null
+                : () => {
+                    setSelectedService({ ...row });
+                    setShowPaymentModal(true);
+                  }
+            }
+            onViewPayments={() => {
+              setSelectedService({ ...row });
+              setShowPaymentsModal(true);
+            }}
             onEdit={() => {
               setShowServiceModalEdit(true);
               setServiceInfoEdit({ ...row });
@@ -184,6 +201,26 @@ export const Services = ({ dateFilter, setDateFilter }) => {
             setServiceInfoEdit({});
           }}
           setShowServiceModal={setShowServiceModal}
+        />
+      )}
+
+      {showPaymentModal && (
+        <ServicePaymentModal
+          service={selectedService}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setSelectedService(null);
+          }}
+        />
+      )}
+
+      {showPaymentsModal && (
+        <ServicePaymentsModal
+          service={selectedService}
+          onClose={() => {
+            setShowPaymentsModal(false);
+            setSelectedService(null);
+          }}
         />
       )}
 

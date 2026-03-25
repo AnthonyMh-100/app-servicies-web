@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useServices } from "../hooks/useServices";
 
@@ -42,8 +42,12 @@ export const ServiceModal = ({
       total_pending: Number(serviceInfoEdit?.total_pending) || 0,
     };
 
-    setServiceInfo(baseInfo);
-    setIsPartialPayment(baseInfo.total_pending > 0);
+    const timeoutId = setTimeout(() => {
+      setServiceInfo(baseInfo);
+      setIsPartialPayment(baseInfo.total_pending > 0);
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [serviceInfoEdit]);
 
   const handleServices = ({ target }) => {
@@ -58,21 +62,10 @@ export const ServiceModal = ({
     }));
   };
 
-  const calculatedPending = useMemo(() => {
-    if (!isPartialPayment) return 0;
-    return Math.max(
-      (Number(serviceInfo.total) || 0) -
-        (Number(serviceInfo.total_advance) || 0),
-      0,
-    );
-  }, [serviceInfo.total, serviceInfo.total_advance, isPartialPayment]);
-
   const handleSubmit = useCallback(
     (e) => {
       const total = Number(serviceInfo.total) || 0;
-      const totalAdvance = isPartialPayment
-        ? Number(serviceInfo.total_advance) || 0
-        : total;
+      const totalAdvance = isPartialPayment ? 0 : total;
 
       handleSubmitServices(e, {
         ...serviceInfo,
@@ -83,15 +76,13 @@ export const ServiceModal = ({
         isCompleted: !isPartialPayment,
       });
     },
-    [serviceInfo, isPartialPayment, handleSubmitServices],
+    [serviceInfo, isPartialPayment, handleSubmitServices, dateFilter],
   );
 
   const handleEditSubmit = useCallback(
     (e) => {
       const total = Number(serviceInfo.total) || 0;
-      const totalAdvance = isPartialPayment
-        ? Number(serviceInfo.total_advance) || 0
-        : total;
+      const totalAdvance = isPartialPayment ? 0 : total;
 
       handleEditSubmitServices(e, {
         ...serviceInfo,
@@ -178,36 +169,6 @@ export const ServiceModal = ({
               <span>Pago parcial</span>
             </PaymentOption>
           </PaymentSelector>
-
-          {isPartialPayment && (
-            <Grid>
-              <Field>
-                <Label>Total adelanto</Label>
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  onChange={handleServices}
-                  name="total_advance"
-                  value={
-                    serviceInfo.total_advance === 0
-                      ? ""
-                      : serviceInfo.total_advance
-                  }
-                  min="0"
-                />
-              </Field>
-
-              <Field>
-                <Label>Total pendiente</Label>
-                <Input
-                  type="number"
-                  name="total_pending"
-                  value={calculatedPending}
-                  readOnly
-                />
-              </Field>
-            </Grid>
-          )}
 
           <Actions>
             <CancelButton type="button" onClick={onClose}>
