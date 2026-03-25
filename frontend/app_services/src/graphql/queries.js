@@ -47,3 +47,16 @@ export const COMPANY = gql`
   }
 `;
 
+export const SERVICE_PAYMENTS = gql`
+  query servicePayments($serviceId: Int!) {
+    servicePayments(serviceId: $serviceId) {
+      id
+      paidDate
+      amount
+      method
+      note
+      serviceId
+    }
+  }
+`;
+

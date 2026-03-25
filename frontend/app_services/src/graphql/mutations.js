@@ -59,3 +59,16 @@ export const LOGIN_COMPANY = gql`
     }
   }
 `;
+
+export const CREATE_SERVICE_PAYMENT = gql`
+  mutation createServicePayment($serviceId: Int!, $paymentInfo: PaymentInfo!) {
+    createServicePayment(serviceId: $serviceId, paymentInfo: $paymentInfo) {
+      id
+      paidDate
+      amount
+      method
+      note
+      serviceId
+    }
+  }
+`;
