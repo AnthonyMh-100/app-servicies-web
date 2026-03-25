@@ -123,8 +123,6 @@ export const serviceQueriesResolver = {
       },
     });
 
-    console.log("servicePayments -> service", JSON.stringify(service, null, 2));
-
     if (!service) throw new Error("Service not found!");
 
     const payments = await Payment.findAll({
