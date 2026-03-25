@@ -1,6 +1,7 @@
 import { Payment, Service } from "../../models/index.js";
 import { validateFieldsService, validatePaymentInfo } from "./utils/utils.js";
 import moment from "moment";
+import sequelize from "../../database/conexion.js";
 
 export const serviceMutationsResolver = {
   createService: async (_parent, { serviceInfo }, { id: companyId }) => {
@@ -33,25 +34,47 @@ export const serviceMutationsResolver = {
     { serviceId, paymentInfo },
     { id: companyId },
   ) => {
-    validatePaymentInfo(paymentInfo);
+    try {
+      return await sequelize.transaction(async () => {
+        validatePaymentInfo(paymentInfo);
 
-    const service = await Service.findOne({
-      where: {
-        id: serviceId,
-        companyId,
-      },
-    });
+        const service = await Service.findOne({
+          where: {
+            id: serviceId,
+            companyId,
+          },
+        });
 
-    if (!service) throw new Error("Service not found!");
+        if (!service) throw new Error("Service not found!");
 
-    const payment = await Payment.create({
-      serviceId,
-      paidDate: paymentInfo.paidDate,
-      amount: paymentInfo.amount,
-      note: paymentInfo.note ?? null,
-    });
+        const { total: totalService } = service;
 
-    return payment;
+        const payment = await Payment.create({
+          serviceId,
+          paidDate: paymentInfo.paidDate,
+          amount: paymentInfo.amount,
+          note: paymentInfo.note ?? null,
+        });
+
+        const totalPaid = await Payment.sum("amount", {
+          where: { serviceId },
+        });
+
+        if (Number(totalPaid) === Number(totalService)) {
+          await service.update({ isCompleted: true });
+        }
+
+        if (totalPaid > totalService) {
+          throw new Error(
+            `Total paid (${totalPaid}) exceeds total service amount (${totalService}).`,
+          );
+        }
+
+        return payment;
+      });
+    } catch (error) {
+      return error;
+    }
   },
   deleteService: async (_parent, { serviceId }, { id: companyId }) => {
     const service = await Service.findOne({

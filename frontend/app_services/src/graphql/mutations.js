@@ -19,6 +19,7 @@ export const CREATE_SERVICE = gql`
       createdDate
       description
       delivery_date
+      isCompleted
       name
       total
       total_advance
@@ -34,6 +35,7 @@ export const EDIT_SERVICE = gql`
       createdDate
       description
       delivery_date
+      isCompleted
       name
       total
       total_advance

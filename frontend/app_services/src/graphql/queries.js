@@ -17,6 +17,7 @@ export const SERVICES = gql`
       createdDate
       description
       delivery_date
+      isCompleted
       name
       total
       total_advance
