@@ -1,15 +1,36 @@
 import React from "react";
 import styled from "styled-components";
 
-export const ActionButtons = ({ onEdit, onDelete, onPay, onViewPayments }) => {
+export const ActionButtons = ({
+  onEdit,
+  onDelete,
+  onPay,
+  onViewPayments,
+  payDisabled = false,
+}) => {
   return (
     <ButtonContainer>
-      {onPay && <PayButton onClick={onPay}>Pagar</PayButton>}
-      {onViewPayments && (
-        <ViewButton onClick={onViewPayments}>Ver pagos</ViewButton>
+      {onPay && (
+        <PayButton
+          type="button"
+          onClick={onPay}
+          disabled={payDisabled}
+          title={payDisabled ? "Este servicio ya está pagado" : "Registrar pago"}
+        >
+          Pagar
+        </PayButton>
       )}
-      <EditButton onClick={onEdit}>Editar</EditButton>
-      <DeleteButton onClick={onDelete}>Eliminar</DeleteButton>
+      {onViewPayments && (
+        <ViewButton type="button" onClick={onViewPayments}>
+          Ver pagos
+        </ViewButton>
+      )}
+      <EditButton type="button" onClick={onEdit}>
+        Editar
+      </EditButton>
+      <DeleteButton type="button" onClick={onDelete}>
+        Eliminar
+      </DeleteButton>
     </ButtonContainer>
   );
 };
@@ -37,6 +58,13 @@ const ButtonBase = styled.button`
     height: 16px;
     fill: currentColor;
   }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 `;
 
 const EditButton = styled(ButtonBase)`
@@ -62,6 +90,10 @@ const PayButton = styled(ButtonBase)`
 
   &:active {
     background-color: #047857;
+  }
+
+  &:disabled:hover {
+    background-color: #10b981;
   }
 `;
 

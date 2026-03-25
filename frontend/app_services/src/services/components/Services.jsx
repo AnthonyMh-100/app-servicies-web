@@ -58,14 +58,11 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       ...(column.key === "actions" && {
         render: (row) => (
           <ActionButtons
-            onPay={
-              row?.status
-                ? null
-                : () => {
-                    setSelectedService({ ...row });
-                    setShowPaymentModal(true);
-                  }
-            }
+            payDisabled={Boolean(row?.status)}
+            onPay={() => {
+              setSelectedService({ ...row });
+              setShowPaymentModal(true);
+            }}
             onViewPayments={() => {
               setSelectedService({ ...row });
               setShowPaymentsModal(true);

@@ -44,23 +44,19 @@ export const ServicePaymentsModal = ({ service, onClose }) => {
                 <Table>
                   <thead>
                     <tr>
-                      <th>ID</th>
                       <th>Fecha</th>
                       <th>Monto</th>
                       <th>Método</th>
                       <th>Nota</th>
-                      <th>ServiceId</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rows.map((row) => (
                       <tr key={row.id}>
-                        <td>{row.id}</td>
                         <td>{row.paidDate}</td>
                         <td>{row.amountFormatted}</td>
                         <td>{row.methodFormatted}</td>
                         <td>{row.noteFormatted}</td>
-                        <td>{row.serviceId}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -210,4 +206,3 @@ const CloseFooterButton = styled.button`
   font-weight: 700;
   cursor: pointer;
 `;
-

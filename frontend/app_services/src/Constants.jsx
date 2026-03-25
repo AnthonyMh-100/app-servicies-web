@@ -9,8 +9,6 @@ export const COLUMNS_SERVICES = [
   { key: "name", label: "Nombre" },
   { key: "description", label: "Descripción" },
   { key: "delivery_date", label: "Fecha de Entrega" },
-  { key: "total_advance", label: "Total Adelanto" },
-  { key: "total_pending", label: "Total Pendiente" },
   { key: "total", label: "Total" },
   { key: "status", label: "Estado" },
   { key: "actions", label: "Acciones" },
