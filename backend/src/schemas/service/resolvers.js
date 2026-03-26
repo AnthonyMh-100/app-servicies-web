@@ -93,19 +93,20 @@ export const serviceMutationsResolver = {
     { id: companyId },
   ) => {
     const service = await Service.findOne({
-      where: {
-        id: serviceId,
-        companyId,
-      },
+      where: { id: serviceId, companyId },
     });
+
     if (!service) throw new Error("Service not found!");
 
-    if (serviceInfo.isCompleted === undefined) {
-      serviceInfo.isCompleted =
-        !serviceInfo.total_pending || serviceInfo.total_pending === 0;
+    const updateData = { ...serviceInfo };
+
+    if (Number(updateData.total) > Number(service.total)) {
+      updateData.isCompleted = false;
     }
 
-    await service.update(serviceInfo);
+    await service.update(updateData);
+    await service.reload();
+
     return service;
   },
 };

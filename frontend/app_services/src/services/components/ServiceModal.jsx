@@ -100,7 +100,9 @@ export const ServiceModal = ({
     <Overlay>
       <Modal>
         <Header>
-          <Title>Nuevo servicio</Title>
+          <Title>
+            {serviceInfo?.id ? "Editar servicio" : "Nuevo servicio"}
+          </Title>
           <CloseButton onClick={onClose}>x</CloseButton>
         </Header>
 
