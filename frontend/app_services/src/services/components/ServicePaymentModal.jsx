@@ -35,7 +35,7 @@ export const ServicePaymentModal = ({
   }, [service, payments]);
 
   const amountNumber = useMemo(() => {
-    if (amount === "" || amount === null || amount === undefined) return 0;
+    if (amount == null || amount === "") return 0;
     const parsed = Number(amount);
     return Number.isFinite(parsed) ? parsed : 0;
   }, [amount]);
