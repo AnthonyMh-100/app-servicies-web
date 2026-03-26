@@ -208,6 +208,7 @@ export const Services = ({ dateFilter, setDateFilter }) => {
             setShowPaymentModal(false);
             setSelectedService(null);
           }}
+          setShowPaymentModal={setShowPaymentModal}
         />
       )}
 

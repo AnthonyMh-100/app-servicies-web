@@ -34,47 +34,56 @@ export const serviceMutationsResolver = {
     { serviceId, paymentInfo },
     { id: companyId },
   ) => {
-    try {
-      return await sequelize.transaction(async () => {
-        validatePaymentInfo(paymentInfo);
+    return await sequelize.transaction(async (transaction) => {
+      validatePaymentInfo(paymentInfo);
 
-        const service = await Service.findOne({
-          where: {
-            id: serviceId,
-            companyId,
-          },
-        });
+      const service = await Service.findOne({
+        where: {
+          id: serviceId,
+          companyId,
+        },
+        transaction,
+      });
 
-        if (!service) throw new Error("Service not found!");
+      if (!service) throw new Error("Service not found!");
 
-        const { total: totalService } = service;
+      const totalService = Number(service.total) || 0;
 
-        const payment = await Payment.create({
+      const payment = await Payment.create(
+        {
           serviceId,
           paidDate: paymentInfo.paidDate,
           amount: paymentInfo.amount,
           note: paymentInfo.note ?? null,
-        });
+        },
+        { transaction },
+      );
 
-        const totalPaid = await Payment.sum("amount", {
-          where: { serviceId },
-        });
-
-        if (Number(totalPaid) === Number(totalService)) {
-          await service.update({ isCompleted: true });
-        }
-
-        if (totalPaid > totalService) {
-          throw new Error(
-            `Total paid (${totalPaid}) exceeds total service amount (${totalService}).`,
-          );
-        }
-
-        return payment;
+      const totalPaid = await Payment.sum("amount", {
+        where: { serviceId },
+        transaction,
       });
-    } catch (error) {
-      return error;
-    }
+
+      if (Number(totalPaid) > Number(totalService)) {
+        throw new Error(
+          `Total paid (${totalPaid}) exceeds total service amount (${totalService}).`,
+        );
+      }
+
+      const isCompleted = Number(totalPaid) === Number(totalService);
+      const totalPending = Math.max(Number(totalService) - Number(totalPaid), 0);
+
+      await service.update(
+        {
+          isCompleted,
+          total_advance: Number(totalPaid) || 0,
+          total_pending: totalPending,
+        },
+        { transaction },
+      );
+
+      return payment;
+    });
   },
   deleteService: async (_parent, { serviceId }, { id: companyId }) => {
     const service = await Service.findOne({

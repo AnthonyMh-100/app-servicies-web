@@ -25,18 +25,20 @@ export const usePayments = ({
       const newPayment = data?.createServicePayment;
       if (!newPayment) return;
 
+      const variables = { serviceId: newPayment.serviceId };
       const existing = cache.readQuery({
         query: SERVICE_PAYMENTS,
-        variables: { serviceId: newPayment.serviceId },
+        variables,
       });
-
-      if (!existing?.servicePayments) return;
 
       cache.writeQuery({
         query: SERVICE_PAYMENTS,
-        variables: { serviceId: newPayment.serviceId },
+        variables,
         data: {
-          servicePayments: [newPayment, ...existing.servicePayments],
+          servicePayments: [
+            newPayment,
+            ...(existing?.servicePayments || []),
+          ],
         },
       });
 
