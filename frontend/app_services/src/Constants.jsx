@@ -35,7 +35,7 @@ export const MENUS = [
     name: "Home",
     Icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 12l9-9 9 9h-3v9h-12v-9h-3z" />
+        <path d="M3 12l9-9 9 9h-3v9h-12v-9H3z" />
       </svg>
     ),
   },
@@ -44,7 +44,7 @@ export const MENUS = [
     name: "Services",
     Icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4 6h16v2h-16v-2zm0 6h16v2h-16v-2zm0 6h16v2h-16v-2z" />
+        <path d="M10 2h4a2 2 0 0 1 2 2v2h3a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V10a2 2 0 0 1 2-2h3V4a2 2 0 0 1 2-2Zm4 2h-4v2h4V4Zm6 6H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9Z" />
       </svg>
     ),
   },

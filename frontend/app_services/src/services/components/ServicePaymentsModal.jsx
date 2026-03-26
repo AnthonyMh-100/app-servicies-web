@@ -88,7 +88,6 @@ export const ServicePaymentsModal = ({ service, onClose }) => {
                     <tr>
                       <th>Fecha</th>
                       <th>Monto</th>
-                      <th>Método</th>
                       <th>Nota</th>
                     </tr>
                   </thead>
@@ -97,7 +96,6 @@ export const ServicePaymentsModal = ({ service, onClose }) => {
                       <tr key={row.id}>
                         <td>{row.paidDateFormatted}</td>
                         <td>{row.amountFormatted}</td>
-                        <td>{row.methodFormatted}</td>
                         <td title={row.noteFormatted}>{row.noteFormatted}</td>
                       </tr>
                     ))}

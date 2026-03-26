@@ -1,47 +1,40 @@
-import Service from "../../models/Service.js";
-import sequelize from "../../database/conexion.js";
+import { Payment, Service } from "../../models/index.js";
 
 export const earningsQueriesResolver = {
   earnings: async (_parent, { date }, { id: companyId }) => {
     try {
-      const paidServices = await Service.findAll({
+      const totalPaid = await Payment.sum("amount", {
         where: {
-          companyId,
-          createdDate: date,
-          isCompleted: true,
+          paidDate: date,
         },
-        attributes: [
-          [sequelize.fn("SUM", sequelize.col("total")), "totalPaid"],
+        include: [
+          {
+            association: Payment.associations.service,
+            required: true,
+            attributes: [],
+            where: { companyId },
+          },
         ],
-        raw: true,
       });
 
-      const pendingServices = await Service.findAll({
+      const totalPending = await Service.sum("total_pending", {
         where: {
           companyId,
           createdDate: date,
         },
-        attributes: [
-          [sequelize.fn("SUM", sequelize.col("total_pending")), "totalPending"],
-        ],
-        raw: true,
       });
 
-      const totalServices = await Service.findAll({
+      const totalServices = await Service.count({
         where: {
           companyId,
           createdDate: date,
         },
-        attributes: [
-          [sequelize.fn("SUM", sequelize.col("total")), "totalServices"],
-        ],
-        raw: true,
       });
 
       return {
-        totalPaid: paidServices[0]?.totalPaid || 0,
-        totalPending: pendingServices[0]?.totalPending || 0,
-        totalServices: totalServices[0]?.totalServices || 0,
+        totalPaid: Number(totalPaid) || 0,
+        totalPending: Number(totalPending) || 0,
+        totalServices: totalServices || 0,
       };
     } catch (error) {
       throw new Error(`Error calculating earnings: ${error.message}`);

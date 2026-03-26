@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import { useQuery } from "@apollo/client/react";
 import { EARNINGS } from "../../graphql/queries";
@@ -40,7 +40,7 @@ export const Home = ({ dateFilter, setDateFilter }) => {
       </TopSection>
 
       <CardsContainer>
-        <Card $gradient="linear-gradient(135deg, #6366f1 0%, #a885f8 100%)">
+        <PaidCard>
           <CardIcon>
             <PaidIcon />
           </CardIcon>
@@ -50,9 +50,9 @@ export const Home = ({ dateFilter, setDateFilter }) => {
               {loading ? "..." : formatterCurrency.format(earnings.totalPaid)}
             </CardValue>
           </CardContent>
-        </Card>
+        </PaidCard>
 
-        <Card $gradient="linear-gradient(135deg, #f97316 0%, #fb923c 100%)">
+        <PendingCard>
           <CardIcon>
             <PendingIcon />
           </CardIcon>
@@ -64,21 +64,17 @@ export const Home = ({ dateFilter, setDateFilter }) => {
                 : formatterCurrency.format(earnings.totalPending)}
             </CardValue>
           </CardContent>
-        </Card>
+        </PendingCard>
 
-        <Card $gradient="linear-gradient(135deg, #10b981 0%, #34d399 100%)">
+        <TotalCard>
           <CardIcon>
             <TotalIcon />
           </CardIcon>
           <CardContent>
             <CardLabel>Total Servicios</CardLabel>
-            <CardValue>
-              {loading
-                ? "..."
-                : formatterCurrency.format(earnings.totalServices)}
-            </CardValue>
+            <CardValue>{loading ? "..." : earnings.totalServices}</CardValue>
           </CardContent>
-        </Card>
+        </TotalCard>
       </CardsContainer>
 
       {error && <ErrorMessage>Error al cargar los datos</ErrorMessage>}
@@ -120,8 +116,8 @@ const fadeIn = keyframes`
 const Container = styled.div`
   width: 100%;
   min-height: 600px;
-  padding: 32px;
-  background: #f3f4f6;
+  padding: 28px;
+
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -130,9 +126,10 @@ const Container = styled.div`
 
 const TopSection = styled.div`
   background: #ffffff;
-  padding: 32px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  padding: 22px 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.06);
 `;
 
 const Header = styled.div`
@@ -144,16 +141,21 @@ const Header = styled.div`
 
 const Title = styled.h1`
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 800;
   color: #111827;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
   margin: 0;
 `;
 
 const DateInputWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
 `;
 
 const Label = styled.label`
@@ -183,37 +185,85 @@ const DateInput = styled.input`
 const CardsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
+  gap: 18px;
   width: 100%;
 `;
 
-const Card = styled.div`
-  background: ${(props) => props.$gradient};
+const CardBase = styled.div`
+  --accent: #4f46e5;
+  --tint: rgba(79, 70, 229, 0.12);
+
+  position: relative;
   padding: 28px;
   border-radius: 18px;
   display: flex;
   align-items: center;
   gap: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.06);
   transition: all 0.3s ease;
   animation: ${fadeIn} 0.6s ease;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: radial-gradient(
+      520px 160px at 22% 0%,
+      var(--tint),
+      transparent 60%
+    );
+    pointer-events: none;
   }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 4px;
+    border-radius: 999px;
+    background: var(--accent);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 42px rgba(17, 24, 39, 0.09);
+  }
+`;
+
+const PaidCard = styled(CardBase)`
+  --accent: #4f46e5;
+  --tint: rgba(79, 70, 229, 0.12);
+`;
+
+const PendingCard = styled(CardBase)`
+  --accent: #f97316;
+  --tint: rgba(249, 115, 22, 0.12);
+`;
+
+const TotalCard = styled(CardBase)`
+  --accent: #10b981;
+  --tint: rgba(16, 185, 129, 0.12);
 `;
 
 const CardIcon = styled.div`
   width: 60px;
   height: 60px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(17, 24, 39, 0.03);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--accent);
   flex-shrink: 0;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
 
   svg {
     width: 32px;
@@ -231,16 +281,16 @@ const CardContent = styled.div`
 const CardLabel = styled.p`
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: #6b7280;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 `;
 
 const CardValue = styled.p`
   font-size: 26px;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 750;
+  color: #111827;
   margin: 0;
   letter-spacing: -0.5px;
 `;

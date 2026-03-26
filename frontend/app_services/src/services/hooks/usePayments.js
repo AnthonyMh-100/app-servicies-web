@@ -35,14 +35,12 @@ export const usePayments = ({
         query: SERVICE_PAYMENTS,
         variables,
         data: {
-          servicePayments: [
-            newPayment,
-            ...(existing?.servicePayments || []),
-          ],
+          servicePayments: [newPayment, ...(existing?.servicePayments || [])],
         },
       });
 
       cache.evict({ fieldName: "services" });
+      cache.evict({ fieldName: "earnings" });
     },
   });
 
