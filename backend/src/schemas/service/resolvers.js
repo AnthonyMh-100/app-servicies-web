@@ -172,4 +172,27 @@ export const serviceQueriesResolver = {
 
     return payments;
   },
+  serviceHistory: async (_parent, { date }, { id: companyId }) => {
+    const services = await Service.findAll({
+      where: {
+        companyId,
+        createdDate: date,
+      },
+      include: [
+        {
+          association: Service.associations.payments,
+          required: false,
+          where: {
+            paidDate: date,
+          },
+        },
+      ],
+      order: [
+        ["createdDate", "DESC"],
+        ["id", "DESC"],
+      ],
+    });
+
+    return services;
+  },
 };

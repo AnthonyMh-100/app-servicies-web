@@ -61,3 +61,26 @@ export const SERVICE_PAYMENTS = gql`
   }
 `;
 
+export const SERVICE_HISTORY = gql`
+  query serviceHistory($date: String!) {
+    serviceHistory(date: $date) {
+      id
+      createdDate
+      name
+      description
+      delivery_date
+      isCompleted
+      total
+      total_advance
+      total_pending
+      payments {
+        id
+        paidDate
+        amount
+        note
+        serviceId
+      }
+    }
+  }
+`;
+

@@ -24,6 +24,7 @@ export const serviceModel = `
         total: Float!
         total_advance:Float!
         total_pending: Float!
+        payments: [Payment]
     }
 
     input ServiceInfo {
