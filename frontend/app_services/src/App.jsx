@@ -32,9 +32,6 @@ function App({
   const companyName = useReactiveVar(companyNameVar);
   const companyUserName = useReactiveVar(companyUserNameVar);
 
-  const brandText = `${companyName || ""}${companyUserName ? ` · ${companyUserName}` : ""}`
-    .trim()
-    .replace(/^·\s*/, "");
   const brandInitials = (companyName || companyUserName || "WS")
     .toString()
     .trim()
@@ -51,8 +48,8 @@ function App({
         <SidebarTop>
           <Brand $collapsed={collapsed}>
             <BrandMark aria-hidden="true">{brandInitials}</BrandMark>
-            <BrandText $collapsed={collapsed} title={brandText}>
-              {brandText || "Empresa"}
+            <BrandText $collapsed={collapsed} title={companyName}>
+              {companyName}
             </BrandText>
             <CollapseButton
               type="button"
@@ -170,7 +167,11 @@ const BrandMark = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 14px;
-  background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+  background: linear-gradient(
+    135deg,
+    ${colors.primary} 0%,
+    ${colors.secondary} 100%
+  );
   color: #ffffff;
   display: grid;
   place-items: center;
@@ -250,7 +251,8 @@ const MenuItem = styled.button`
   padding: ${(props) => (props.$collapsed ? "12px 10px" : "12px 12px")};
   border-radius: 12px;
   border: none;
-  background: ${(props) => (props.$active ? "rgba(99, 102, 241, 0.10)" : "transparent")};
+  background: ${(props) =>
+    props.$active ? "rgba(99, 102, 241, 0.10)" : "transparent"};
   color: ${colors.textDark};
   font-size: 14px;
   font-weight: 650;
@@ -279,7 +281,6 @@ const MenuIconWrap = styled.div`
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: ${(props) => (props.$active ? "rgba(99, 102, 241, 0.16)" : "transparent")};
   color: ${(props) => (props.$active ? colors.secondary : colors.textGray)};
 `;
 

@@ -153,9 +153,6 @@ const DateInputWrapper = styled.div`
   gap: 10px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(229, 231, 235, 0.9);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
 `;
 
 const Label = styled.label`
