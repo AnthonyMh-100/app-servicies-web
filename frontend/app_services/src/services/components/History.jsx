@@ -25,14 +25,14 @@ export const History = ({ dateFilter, setDateFilter }) => {
   }, [historyData]);
 
   const toggleHistoryRow = (serviceId) => {
-    setExpandedHistoryIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(serviceId)) {
-        next.delete(serviceId);
-      } else {
-        next.add(serviceId);
-      }
-      return next;
+    setExpandedHistoryIds((currentIds) => {
+      const updatedIds = new Set(currentIds);
+
+      updatedIds.has(serviceId)
+        ? updatedIds.delete(serviceId)
+        : updatedIds.add(serviceId);
+
+      return updatedIds;
     });
   };
 
