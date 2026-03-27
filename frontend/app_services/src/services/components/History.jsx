@@ -5,6 +5,8 @@ import { SERVICE_HISTORY } from "../../graphql/queries";
 import { formatterCurrency, maxLength } from "../../utils/utils";
 import { MAX_LENGTH } from "../../utils/constants";
 import { InformativeModal } from "../../components";
+import { usePagedLoad } from "../hooks/usePagedLoad";
+import { DEFAULT_PAGE_SIZE } from "../../utils/constants";
 
 export const History = ({ dateFilter, setDateFilter }) => {
   const [expandedHistoryIds, setExpandedHistoryIds] = useState(new Set());
@@ -23,6 +25,12 @@ export const History = ({ dateFilter, setDateFilter }) => {
   const historyServices = useMemo(() => {
     return historyData?.serviceHistory || [];
   }, [historyData]);
+
+  const { paginatedData: pagedHistoryServices, observeIntersection } =
+    usePagedLoad({
+      data: historyServices,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
 
   const toggleHistoryRow = (serviceId) => {
     setExpandedHistoryIds((currentIds) => {
@@ -72,7 +80,7 @@ export const History = ({ dateFilter, setDateFilter }) => {
               </tr>
             </thead>
             <tbody>
-              {!historyServices.length && !historyLoading && (
+              {!pagedHistoryServices?.length && !historyLoading && (
                 <tr>
                   <td colSpan={8}>
                     <EmptyState>No hay historial para esta fecha.</EmptyState>
@@ -80,13 +88,14 @@ export const History = ({ dateFilter, setDateFilter }) => {
                 </tr>
               )}
 
-              {historyServices.map((service) => {
+              {pagedHistoryServices.map((service, index) => {
                 const isExpanded = expandedHistoryIds.has(service.id);
                 const payments = service.payments || [];
+                const isLast = index === pagedHistoryServices.length - 1;
 
                 return (
                   <React.Fragment key={`history-${service.id}`}>
-                    <tr>
+                    <tr ref={isLast ? observeIntersection : null}>
                       <td>{service.name}</td>
                       <td>
                         <TextDescription
@@ -276,8 +285,9 @@ const HistorySubtitle = styled.span`
 
 const HistoryTableWrapper = styled.div`
   width: 100%;
-  overflow-x: auto;
+  overflow-y: auto;
   border-radius: 14px;
+  max-height: calc(100vh - 360px);
 `;
 
 const HistoryTable = styled.table`

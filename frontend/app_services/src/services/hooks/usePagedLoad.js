@@ -7,31 +7,26 @@ export const usePagedLoad = ({ data, pageSize = DEFAULT_PAGE_SIZE }) => {
 
   const paginatedData = useMemo(
     () => data.slice(0, (currentPage + 1) * pageSize),
-    [currentPage, data, pageSize],
+    [currentPage, data],
   );
 
   const observeIntersection = useCallback((node) => {
     if (observer.current) observer.current.disconnect();
-
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         setCurrentPage((prevPage) => prevPage + 1);
       }
     });
-
     if (node) observer.current.observe(node);
   }, []);
 
   useEffect(() => {
-    setCurrentPage(0);
-  }, [data]);
+    if (currentPage) setCurrentPage(0);
+  }, [data.length]);
 
-  useEffect(() => {
-    return () => observer.current?.disconnect();
-  }, []);
+  useEffect(() => () => observer.current?.disconnect(), []);
 
   return {
-    currentPage,
     observeIntersection,
     paginatedData,
   };

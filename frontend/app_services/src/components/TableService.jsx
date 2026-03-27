@@ -40,6 +40,7 @@ const TableWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
   border-radius: 14px;
+  height: calc(100vh - 460px);
 `;
 const Table = styled.table`
   width: 100%;

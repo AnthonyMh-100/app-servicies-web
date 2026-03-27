@@ -96,7 +96,24 @@ function App({
           aria-label="Cerrar sesión"
           title="Logout"
         >
-          <span>Logout</span>
+          <ContainerLogout>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16 17l5-5-5-5" />
+              <path d="M21 12H9" />
+              <path d="M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" />
+            </svg>
+            <span>Logout</span>
+          </ContainerLogout>
         </LogoutButton>
       </Sidebar>
 
@@ -275,6 +292,21 @@ const MenuItem = styled.button`
   }
 `;
 
+const ContainerLogout = styled.div`
+  min-height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: ${colors.secondary};
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
 const MenuIconWrap = styled.div`
   width: 36px;
   height: 36px;
@@ -285,6 +317,10 @@ const MenuIconWrap = styled.div`
 `;
 
 const LogoutButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: ${(props) => (props.$collapsed ? "center" : "flex-start")};
+  gap: ${(props) => (props.$collapsed ? "0" : "12px")};
   padding: ${(props) => (props.$collapsed ? "12px 10px" : "12px 12px")};
   border-radius: 12px;
   border: none;

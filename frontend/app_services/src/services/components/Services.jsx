@@ -21,6 +21,7 @@ import { ServiceModal } from "./ServiceModal";
 import { ServicePaymentModal } from "./ServicePaymentModal";
 import { ServicePaymentsModal } from "./ServicePaymentsModal";
 import { MAX_LENGTH } from "../../utils/constants";
+import { usePagedLoad } from "../hooks/usePagedLoad";
 
 const { ALL, PAID, UNPAID } = KEYS_FILTERS;
 
@@ -43,15 +44,13 @@ export const Services = ({ dateFilter, setDateFilter }) => {
     withPagination: false,
   };
 
-  const { handleDeleteService, paginatedData, observeIntersection } =
-    useServices({
-      dateFilter,
-      shouldFetchServices: true,
-      setDeletedServiceId,
-      setShowDeleteModal,
-      variablesQuery,
-    });
-
+  const { handleDeleteService, servicesData } = useServices({
+    dateFilter,
+    shouldFetchServices: true,
+    setDeletedServiceId,
+    setShowDeleteModal,
+    variablesQuery,
+  });
 
   const columnsFormatted = useMemo(() => {
     return COLUMNS_SERVICES.map((column) => ({
@@ -112,9 +111,9 @@ export const Services = ({ dateFilter, setDateFilter }) => {
   }, []);
 
   const servicesFormatted = useMemo(() => {
-    if (!paginatedData?.length) return [];
+    if (!servicesData?.length) return [];
 
-    const servicesInformation = paginatedData.map((serviceInfo) => ({
+    const servicesInformation = servicesData.map((serviceInfo) => ({
       ...serviceInfo,
       status: Boolean(serviceInfo.isCompleted),
     }));
@@ -126,7 +125,14 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       paidValue: PAID,
       unpaidValue: UNPAID,
     });
-  }, [paginatedData, selectedFilter, search]);
+  }, [servicesData, selectedFilter, search]);
+
+  const { paginatedData: pagedServices, observeIntersection } = usePagedLoad({
+    data: servicesFormatted,
+    pageSize: 3,
+  });
+
+  console.log("Servicios formateados para mostrar:", pagedServices);
 
   return (
     <Container>
@@ -179,7 +185,7 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       <BottomContainer>
         <TableService
           columns={columnsFormatted}
-          data={servicesFormatted}
+          data={pagedServices}
           observeIntersection={observeIntersection}
         />
       </BottomContainer>
