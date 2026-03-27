@@ -11,6 +11,7 @@ import { useNavigate } from "react-router";
 import { usePagedLoad } from "./usePagedLoad";
 import { DEFAULT_PAGE_SIZE } from "../../utils/constants";
 import { useAuthentication } from "../../context/AuthContext";
+import { useState } from "react";
 
 export const useServices = ({
   dateFilter = "",
@@ -24,6 +25,8 @@ export const useServices = ({
 }) => {
   const navigate = useNavigate();
   const { setToken, setUser, setCompanyId } = useAuthentication();
+
+  const [isError, setIsError] = useState(null);
 
   const {
     data: servicesData,
@@ -55,6 +58,10 @@ export const useServices = ({
         setUser({ id, name, username });
 
         navigate("/home", { replace: true });
+      },
+      onError: (error) => {
+        console.error("Error de autenticación hook:", error);
+        setIsError(error);
       },
     },
   );
@@ -235,11 +242,13 @@ export const useServices = ({
     handleEditSubmitServices,
     handleSubmitRegister,
     handleSubmitServices,
+    isError,
     paginatedData,
     observeIntersection,
     servicesData: servicesData?.services || [],
     servicesLoading,
     servicesError,
+    setIsError,
     userLoading,
     userRegisterLoading,
     userRegisterError,

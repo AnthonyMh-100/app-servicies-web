@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { SECCTION_LOGIN_KEY } from "../Constants";
-const { REGISTER } = SECCTION_LOGIN_KEY;
 import { useServices } from "../services/hooks";
+import { InformativeModal } from "./InformativeModal";
+
+const { REGISTER } = SECCTION_LOGIN_KEY;
 
 export const FormLogin = ({ setTabIndex }) => {
   const [user, setUser] = useState({});
 
-  const { handleSubmit } = useServices({});
+  const { handleSubmit, isError, setIsError } = useServices({});
 
   const handleFieldsUser = ({ target }) => {
     const { name, value } = target;
@@ -18,36 +20,47 @@ export const FormLogin = ({ setTabIndex }) => {
   };
 
   return (
-    <Card>
-      <Header>
-        <Title>Bienvenido</Title>
-        <Subtitle>Ingresa tus credenciales</Subtitle>
-      </Header>
+    <>
+      <Card>
+        <Header>
+          <Title>Bienvenido</Title>
+          <Subtitle>Ingresa tus credenciales</Subtitle>
+        </Header>
 
-      <Form onSubmit={(e) => handleSubmit(e, user)}>
-        <Input
-          type="text"
-          placeholder="Username"
-          autoComplete="username"
-          name="username"
-          onChange={handleFieldsUser}
-        />
+        <Form onSubmit={(e) => handleSubmit(e, user)}>
+          <Input
+            type="text"
+            placeholder="Username"
+            autoComplete="username"
+            name="username"
+            onChange={handleFieldsUser}
+          />
 
-        <Input
-          type="password"
-          placeholder="Password"
-          autoComplete="current-password"
-          name="password"
-          onChange={handleFieldsUser}
-        />
+          <Input
+            type="password"
+            placeholder="Password"
+            autoComplete="current-password"
+            name="password"
+            onChange={handleFieldsUser}
+          />
 
-        <Button type="submit">Ingresar</Button>
+          <Button type="submit">Ingresar</Button>
 
-        <SecondaryButton type="button" onClick={() => setTabIndex(REGISTER)}>
-          Crear empresa
-        </SecondaryButton>
-      </Form>
-    </Card>
+          <SecondaryButton type="button" onClick={() => setTabIndex(REGISTER)}>
+            Crear empresa
+          </SecondaryButton>
+        </Form>
+      </Card>
+      {isError && (
+        <Container>
+          <InformativeModal
+            title="Error de autenticación"
+            description="No se pudieron validar tus credenciales. Por favor, verifica tu username y password e intenta nuevamente."
+            onClose={() => setIsError(null)}
+          />
+        </Container>
+      )}
+    </>
   );
 };
 
@@ -62,6 +75,10 @@ const fadeIn = keyframes`
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+`;
+
+const Container = styled.div`
+  position: absolute;
 `;
 
 const Card = styled.div`
