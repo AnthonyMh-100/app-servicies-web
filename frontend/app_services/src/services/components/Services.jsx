@@ -52,6 +52,7 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       variablesQuery,
     });
 
+
   const columnsFormatted = useMemo(() => {
     return COLUMNS_SERVICES.map((column) => ({
       ...column,
@@ -267,7 +268,6 @@ const TopContainer = styled.div`
   border-radius: 20px;
   display: flex;
   justify-content: flex-start;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 `;
 
 const DateInput = styled.input`
@@ -304,7 +304,6 @@ const MiddleContainer = styled.div`
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 `;
 
 const FilterGroup = styled.div`
@@ -375,7 +374,7 @@ const CreateButton = styled.button`
   padding: 10px 18px;
   border-radius: 12px;
   border: none;
-  background: #6366f1;
+  background: #111827;
   color: #ffffff;
   font-weight: 600;
   font-size: 14px;
@@ -383,7 +382,7 @@ const CreateButton = styled.button`
   transition: all 0.25s ease;
 
   &:hover {
-    background: #4f46e5;
+    background: #0f172a;
     transform: translateY(-1px);
   }
 
@@ -416,5 +415,4 @@ const BottomContainer = styled.div`
   background: #ffffff;
   padding: 24px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 `;

@@ -39,43 +39,37 @@ export const TableService = ({
 const TableWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
-  border-radius: 16px;
+  border-radius: 14px;
 `;
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
 
   thead {
-    background: #eef2ff;
-
     th {
-      padding: 14px 20px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 14px;
-      color: #4f46e5;
+      padding: 12px 18px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      color: #111827;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
     }
   }
 
   tbody {
     tr {
       &:hover {
-        background: #e5e9ec;
-      }
-    }
-    tr:nth-child(even) {
-      background: #f5f5f5;
-      &:hover {
-        background: #e5e9ec;
+        background: #f8fafc;
       }
     }
 
     td {
-      padding: 14px 20px;
+      padding: 14px 18px;
       font-size: 14px;
       color: #111827;
-      text-align: center;
-      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      border-bottom: 1px solid #eef2f7;
     }
   }
 `;

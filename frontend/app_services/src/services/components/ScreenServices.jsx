@@ -4,8 +4,9 @@ import { useAuthentication } from "../../context/AuthContext";
 import { MENUS, MENUS_KEYS } from "../../Constants";
 import { Home } from "./Home";
 import { Services } from "./Services";
+import { History } from "./History";
 
-const { HOME, SERVICES } = MENUS_KEYS;
+const { HOME, SERVICES, HISTORY } = MENUS_KEYS;
 
 export const ScreenServices = () => {
   const [activeTab, setActiveTab] = useState("home");
@@ -18,6 +19,9 @@ export const ScreenServices = () => {
     },
     [SERVICES]: {
       screen: Services,
+    },
+    [HISTORY]: {
+      screen: History,
     },
   };
 

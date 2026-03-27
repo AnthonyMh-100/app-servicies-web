@@ -27,6 +27,7 @@ export const SECCTION_LOGIN_KEY = {
 export const MENUS_KEYS = {
   HOME: "home",
   SERVICES: "services",
+  HISTORY: "history",
 };
 
 export const MENUS = [
@@ -45,6 +46,15 @@ export const MENUS = [
     Icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M10 2h4a2 2 0 0 1 2 2v2h3a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V10a2 2 0 0 1 2-2h3V4a2 2 0 0 1 2-2Zm4 2h-4v2h4V4Zm6 6H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9Z" />
+      </svg>
+    ),
+  },
+  {
+    key: MENUS_KEYS.HISTORY,
+    name: "History",
+    Icon: () => (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 5a7 7 0 1 1-6.32 4H3l3.8-3.8L10.6 9H8.1A5 5 0 1 0 12 7v2l4-3-4-3v2Z" />
       </svg>
     ),
   },
