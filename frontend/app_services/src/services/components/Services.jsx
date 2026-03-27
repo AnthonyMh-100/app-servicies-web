@@ -130,11 +130,14 @@ export const Services = ({ dateFilter, setDateFilter }) => {
   return (
     <Container>
       <TopContainer>
-        <DateInput
-          type="date"
-          value={dateFilter}
-          onChange={({ target: { value } }) => setDateFilter(value)}
-        />
+        <DateInputWrapper>
+          <Label>Fecha:</Label>
+          <DateInput
+            type="date"
+            value={dateFilter}
+            onChange={({ target: { value } }) => setDateFilter(value)}
+          />
+        </DateInputWrapper>
       </TopContainer>
 
       <MiddleContainer>
@@ -284,6 +287,13 @@ const DateInput = styled.input`
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   }
 `;
+const DateInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+`;
 
 const MiddleContainer = styled.div`
   background: #ffffff;
@@ -317,6 +327,11 @@ const FilterLabel = styled.label`
     width: 16px;
     height: 16px;
   }
+`;
+const Label = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f46e5;
 `;
 
 const SearchInput = styled.input`
