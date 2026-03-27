@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useServices } from "../hooks/useServices";
 
@@ -96,6 +96,12 @@ export const ServiceModal = ({
     [serviceInfo, isPartialPayment, handleEditSubmitServices],
   );
 
+  const isDisabledFields = useMemo(() => {
+    const { delivery_date, total } = serviceInfo;
+
+    return !delivery_date || !total;
+  }, [serviceInfo]);
+
   return (
     <Overlay>
       <Modal>
@@ -177,7 +183,9 @@ export const ServiceModal = ({
             <CancelButton type="button" onClick={onClose}>
               Cancelar
             </CancelButton>
-            <SubmitButton type="submit">Guardar</SubmitButton>
+            <SubmitButton type="submit" disabled={isDisabledFields}>
+              Guardar
+            </SubmitButton>
           </Actions>
         </Form>
       </Modal>
@@ -330,12 +338,13 @@ const SubmitButton = styled.button`
   padding: 10px 20px;
   border-radius: 12px;
   border: none;
-  background: #6366f1;
+  background: ${({ disabled }) => (disabled ? "#a5b4fc" : "#6366f1")};
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
 
   &:hover {
     background: #4f46e5;
+    background: ${({ disabled }) => (disabled ? "#a5b4fc" : "#4f46e5")};
   }
 `;
