@@ -20,9 +20,11 @@ export const serviceMutationsResolver = {
     const { id: serviceId, total: serviceTotal } = service;
 
     if (isCompleted) {
+      const paidDate =
+        serviceInfo.createdDate || moment().format("YYYY-MM-DD");
       await Payment.create({
         serviceId,
-        paidDate: moment().format("YYYY-MM-DD"),
+        paidDate,
         amount: serviceTotal || 0,
       });
     }

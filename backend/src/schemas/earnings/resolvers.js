@@ -10,8 +10,8 @@ export const earningsQueriesResolver = {
         include: [
           {
             association: Payment.associations.service,
-            required: true,
             attributes: [],
+            required: true,
             where: { companyId },
           },
         ],

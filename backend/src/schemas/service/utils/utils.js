@@ -1,11 +1,20 @@
 import { GraphQLError } from "graphql";
+import moment from "moment";
 
 export const badUserInputError = (message) =>
   new GraphQLError(message, {
     extensions: { code: "BAD_USER_INPUT" },
   });
 
-export const validateFieldsService = ({ name, description, delivery_date }) => {
+const isValidDateString = (value) =>
+  moment(value, "YYYY-MM-DD", true).isValid();
+
+export const validateFieldsService = ({
+  name,
+  description,
+  delivery_date,
+  createdDate,
+}) => {
   if (name && !name.trim())
     throw badUserInputError("Field name is required!");
 
@@ -14,11 +23,26 @@ export const validateFieldsService = ({ name, description, delivery_date }) => {
 
   if (delivery_date && !delivery_date.trim())
     throw badUserInputError("Field delivery date is required!");
+
+  if (createdDate === undefined || createdDate === null || !createdDate.trim())
+    throw badUserInputError("createdDate is required!");
+
+  if (createdDate && !isValidDateString(createdDate)) {
+    throw badUserInputError("createdDate must be YYYY-MM-DD!");
+  }
+
+  if (delivery_date && !isValidDateString(delivery_date)) {
+    throw badUserInputError("delivery_date must be YYYY-MM-DD!");
+  }
 };
 
 export const validatePaymentInfo = ({ paidDate, amount, note } = {}) => {
   if (!paidDate || !paidDate.toString().trim()) {
     throw badUserInputError("paidDate is required!");
+  }
+
+  if (!isValidDateString(paidDate)) {
+    throw badUserInputError("paidDate must be YYYY-MM-DD!");
   }
 
   if (amount === undefined || amount === null || amount === "") {
