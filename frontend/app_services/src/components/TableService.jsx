@@ -30,17 +30,31 @@ export const TableService = ({
               </tr>
             );
           })}
+          {!data?.length && (
+            <tr>
+              <td colSpan={7}>
+                <EmptyState>No hay servicios para esta fecha.</EmptyState>
+              </td>
+            </tr>
+          )}
         </tbody>
       </Table>
     </TableWrapper>
   );
 };
 
+const EmptyState = styled.div`
+  padding: 24px;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+`;
+
 const TableWrapper = styled.div`
   width: 100%;
-  overflow-x: auto;
+  overflow-y: auto;
   border-radius: 14px;
-  height: calc(100vh - 460px);
+  max-height: calc(100vh - 460px);
 `;
 const Table = styled.table`
   width: 100%;

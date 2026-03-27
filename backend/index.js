@@ -87,5 +87,9 @@ app.use(
   }),
 );
 
-await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
-console.log(`🚀 Servidor listo en http://localhost:4000/graphql`);
+await new Promise((resolve) =>
+  httpServer.listen({ port: process.env.PORT }, resolve),
+);
+console.log(
+  `🚀 Servidor listo en http://localhost:${process.env.PORT}/graphql`,
+);
