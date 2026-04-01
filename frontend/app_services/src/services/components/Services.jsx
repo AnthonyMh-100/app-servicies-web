@@ -132,8 +132,6 @@ export const Services = ({ dateFilter, setDateFilter }) => {
     pageSize: 3,
   });
 
-  console.log("Servicios formateados para mostrar:", pagedServices);
-
   return (
     <Container>
       <TopContainer>
