@@ -1,5 +1,15 @@
-import React from "react";
+﻿import React from "react";
 import styled, { keyframes } from "styled-components";
+
+const TOKENS = {
+  overlay: "rgba(15, 23, 36, 0.45)",
+  surface: "#ffffff",
+  border: "#dce2e9",
+  textStrong: "#0f1724",
+  textSoft: "#60758f",
+  accent: "#0f4c81",
+  accentSoft: "#e5eef7",
+};
 
 export const InformativeModal = ({
   title = "Descripción",
@@ -26,7 +36,7 @@ export const InformativeModal = ({
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.98);
+    transform: translateY(8px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -37,68 +47,59 @@ const fadeIn = keyframes`
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: ${TOKENS.overlay};
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  padding: 16px;
 `;
 
 const Card = styled.div`
-  width: 520px;
-  max-height: 70vh;
-  padding: 32px;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+  width: min(560px, 96vw);
+  max-height: 72vh;
+  padding: 20px;
+  background: ${TOKENS.surface};
+  border: 1px solid ${TOKENS.border};
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  animation: ${fadeIn} 0.35s ease;
+  gap: 14px;
+  animation: ${fadeIn} 0.2s ease;
 `;
 
 const Header = styled.div`
-  text-align: center;
+  text-align: left;
 `;
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: ${TOKENS.textStrong};
 `;
 
 const Content = styled.div`
-  font-size: 15px;
-  line-height: 1.6;
-  color: #374151;
+  font-size: 14px;
+  line-height: 1.65;
+  color: ${TOKENS.textSoft};
   overflow-y: auto;
   padding-right: 4px;
 `;
 
 const Footer = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
 `;
 
 const CloseButton = styled.button`
-  padding: 14px 28px;
-  border-radius: 16px;
-  border: none;
-  background: #eef2ff;
-  color: #4f46e5;
-  font-size: 15px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #c8d9ea;
+  background: ${TOKENS.accentSoft};
+  color: ${TOKENS.accent};
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
-
-  &:hover {
-    background: #e0e7ff;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    background: #c7d2fe;
-    transform: translateY(0);
-  }
 `;

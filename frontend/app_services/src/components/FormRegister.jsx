@@ -6,7 +6,13 @@ import { useServices } from "../services/hooks";
 const { LOGIN } = SECCTION_LOGIN_KEY;
 
 export const FormRegister = ({ setTabIndex }) => {
-  const [userRegister, setUserRegister] = useState({});
+  const [userRegister, setUserRegister] = useState({
+    code: "",
+    name: "",
+    username: "",
+    password: "",
+    phone: "",
+  });
 
   const { handleSubmitRegister } = useServices({});
   const handleFieldsUser = ({ target }) => {
@@ -17,57 +23,93 @@ export const FormRegister = ({ setTabIndex }) => {
     }));
   };
 
+  const isDisabled = !(
+    userRegister.code?.trim().length &&
+    userRegister.name?.trim().length &&
+    userRegister.username?.trim().length &&
+    userRegister.password?.trim().length &&
+    userRegister.phone?.trim().length
+  );
+
   return (
-    <Card>
+    <Card aria-label="Formulario de registro de empresa">
       <Header>
-        <Title>Registrar Empresa</Title>
-        <Subtitle>Completa los datos de la empresa</Subtitle>
+        <Eyebrow>Registro</Eyebrow>
+        <Title>Crea tu empresa</Title>
+        <Subtitle>Configura tu espacio para empezar a gestionar servicios.</Subtitle>
       </Header>
 
       <Form onSubmit={(e) => handleSubmitRegister(e, userRegister)}>
-        <Input
-          type="text"
-          placeholder={"C\u00F3digo de la empresa"}
-          autoComplete="off"
-          name="code"
-          onChange={handleFieldsUser}
-        />
+        <Field>
+          <Label htmlFor="company-code">Código de la empresa</Label>
+          <Input
+            id="company-code"
+            type="text"
+            placeholder="Ej. WS-001"
+            autoComplete="off"
+            name="code"
+            value={userRegister.code}
+            onChange={handleFieldsUser}
+          />
+        </Field>
 
-        <Input
-          type="text"
-          placeholder="Nombre de la empresa"
-          autoComplete="organization"
-          name="name"
-          onChange={handleFieldsUser}
-        />
+        <Field>
+          <Label htmlFor="company-name">Nombre de la empresa</Label>
+          <Input
+            id="company-name"
+            type="text"
+            placeholder="Nombre comercial"
+            autoComplete="organization"
+            name="name"
+            value={userRegister.name}
+            onChange={handleFieldsUser}
+          />
+        </Field>
 
-        <Input
-          type="text"
-          placeholder="Username"
-          autoComplete="username"
-          name="username"
-          onChange={handleFieldsUser}
-        />
+        <Field>
+          <Label htmlFor="company-email">Correo electrónico</Label>
+          <Input
+            id="company-email"
+            type="email"
+            placeholder="tuempresa@correo.com"
+            autoComplete="username"
+            name="username"
+            value={userRegister.username}
+            onChange={handleFieldsUser}
+          />
+        </Field>
 
-        <Input
-          type="password"
-          placeholder="Password"
-          autoComplete="new-password"
-          name="password"
-          onChange={handleFieldsUser}
-        />
+        <Field>
+          <Label htmlFor="company-password">Contraseña</Label>
+          <Input
+            id="company-password"
+            type="password"
+            placeholder="Crea una contraseña segura"
+            autoComplete="new-password"
+            name="password"
+            value={userRegister.password}
+            onChange={handleFieldsUser}
+          />
+        </Field>
 
-        <Input
-          type="tel"
-          placeholder={"Tel\u00E9fono"}
-          autoComplete="tel"
-          name="phone"
-          onChange={handleFieldsUser}
-        />
+        <Field>
+          <Label htmlFor="company-phone">Teléfono</Label>
+          <Input
+            id="company-phone"
+            type="tel"
+            placeholder="+51 999 999 999"
+            autoComplete="tel"
+            name="phone"
+            value={userRegister.phone}
+            onChange={handleFieldsUser}
+          />
+        </Field>
 
-        <Button type="submit">Crear Empresa</Button>
+        <Button type="submit" disabled={isDisabled}>
+          Crear Empresa
+        </Button>
         <SecondaryButton type="button" onClick={() => setTabIndex(LOGIN)}>
-          Volver
+          Volver al login
         </SecondaryButton>
       </Form>
     </Card>
@@ -88,156 +130,134 @@ const fadeIn = keyframes`
 `;
 
 const Card = styled.div`
-  width: min(560px, 94vw);
-  padding: 44px 44px 36px;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 26px;
-  border: 1px solid rgba(229, 231, 235, 0.9);
-  box-shadow:
-    0 34px 80px rgba(17, 24, 39, 0.12),
-    0 8px 24px rgba(17, 24, 39, 0.06);
+  width: min(420px, 100%);
+  padding: 4px;
+  background: transparent;
+  border-radius: 16px;
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  gap: 22px;
+  gap: 20px;
   animation: ${fadeIn} 0.6s ease;
-  position: relative;
-
-  @supports (
-    (-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))
-  ) {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 180px;
-    height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #6366f1, #818cf8);
-    opacity: 0.75;
-    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.22);
-  }
 `;
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  text-align: center;
-  padding-top: 6px;
+  gap: 10px;
+`;
+
+const Eyebrow = styled.span`
+  font-size: 12px;
+  color: #60758f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 `;
 
 const Title = styled.h1`
   margin: 0;
-  font-size: 30px;
-  font-weight: 800;
-  color: #111827;
-  text-align: center;
-  letter-spacing: -0.4px;
+  font-size: 34px;
+  font-weight: 700;
+  color: #0f1724;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
 `;
 
 const Subtitle = styled.p`
   margin: 0;
-  font-size: 14px;
-  color: #6b7280;
-  text-align: center;
-  line-height: 1.5;
+  font-size: 15px;
+  color: #60758f;
+  line-height: 1.6;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin-top: 4px;
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Label = styled.label`
+  font-size: 13px;
+  font-weight: 600;
+  color: #243446;
 `;
 
 const Input = styled.input`
-  padding: 16px 16px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 11px;
+  border: 1px solid #ccd6e2;
+  background: #ffffff;
   font-size: 15px;
-  color: #111827;
+  color: #0f1724;
   outline: none;
-  transition: all 0.25s ease;
+  transition: border-color 0.2s ease;
 
   &:hover {
-    border-color: #d1d5db;
-    background: #ffffff;
+    border-color: #8ea2bf;
   }
 
   &:focus {
-    background: #ffffff;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+    border-color: #0f4c81;
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.18);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: #8da0b6;
   }
 `;
 
 const Button = styled.button`
-  margin-top: 12px;
-  padding: 16px;
-  border-radius: 16px;
-  border: none;
-  background: linear-gradient(135deg, #6366f1, #818cf8);
+  margin-top: 6px;
+  min-height: 46px;
+  border-radius: 11px;
+  border: 1px solid #0f4c81;
+  background: #0f4c81;
   color: #ffffff;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 36px rgba(99, 102, 241, 0.4);
+    background: #0c3d69;
   }
 
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
+  &:disabled {
+    cursor: not-allowed;
+    background: #8da0b6;
+    border-color: #8da0b6;
   }
 
   &:focus-visible {
-    outline: none;
-    box-shadow:
-      0 18px 36px rgba(99, 102, 241, 0.34),
-      0 0 0 4px rgba(99, 102, 241, 0.22);
+    outline: 3px solid rgba(15, 76, 129, 0.25);
+    outline-offset: 1px;
   }
 `;
 
 const SecondaryButton = styled.button`
-  margin-top: 6px;
-  padding: 14px;
-  border: 1px solid rgba(199, 210, 254, 0.95);
-  border-radius: 16px;
-  background: rgba(238, 242, 255, 0.75);
-  color: #4f46e5;
-  font-size: 15px;
+  min-height: 46px;
+  border: 1px solid #ccd6e2;
+  border-radius: 11px;
+  background: #f2f5f8;
+  color: #243446;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: rgba(224, 231, 255, 0.85);
-    border-color: rgba(165, 180, 252, 0.95);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-    background: rgba(199, 210, 254, 0.9);
+    background: #e9eef3;
   }
 
   &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+    outline: 3px solid rgba(15, 76, 129, 0.18);
+    outline-offset: 1px;
   }
 `;

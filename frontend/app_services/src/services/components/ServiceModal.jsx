@@ -1,6 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+﻿import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useServices } from "../hooks/useServices";
+
+const TOKENS = {
+  overlay: "rgba(15, 23, 36, 0.45)",
+  surface: "#ffffff",
+  border: "#dce2e9",
+  textStrong: "#0f1724",
+  textSoft: "#60758f",
+  accent: "#0f4c81",
+  accentSoft: "#e5eef7",
+};
 
 export const ServiceModal = ({
   dateFilter,
@@ -98,18 +108,17 @@ export const ServiceModal = ({
 
   const isDisabledFields = useMemo(() => {
     const { delivery_date, total } = serviceInfo;
-
     return !delivery_date || !total;
   }, [serviceInfo]);
 
   return (
-    <Overlay>
-      <Modal>
+    <Overlay onClick={onClose}>
+      <Modal onClick={(e) => e.stopPropagation()}>
         <Header>
-          <Title>
-            {serviceInfo?.id ? "Editar servicio" : "Nuevo servicio"}
-          </Title>
-          <CloseButton onClick={onClose}>x</CloseButton>
+          <Title>{serviceInfo?.id ? "Editar servicio" : "Nuevo servicio"}</Title>
+          <CloseButton onClick={onClose} aria-label="Cerrar">
+            ×
+          </CloseButton>
         </Header>
 
         <Form onSubmit={serviceInfo?.id ? handleEditSubmit : handleSubmit}>
@@ -124,7 +133,7 @@ export const ServiceModal = ({
           </Field>
 
           <Field>
-            <Label>Descripcion</Label>
+            <Label>Descripción</Label>
             <Textarea
               placeholder="Describe el servicio"
               onChange={handleServices}
@@ -196,64 +205,71 @@ export const ServiceModal = ({
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(8px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
 `;
 
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: ${TOKENS.overlay};
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 16px;
 `;
 
 const Modal = styled.div`
-  width: 520px;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 24px 28px 28px;
-  animation: ${fadeIn} 0.3s ease;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+  width: min(620px, 96vw);
+  background: ${TOKENS.surface};
+  border-radius: 16px;
+  border: 1px solid ${TOKENS.border};
+  padding: 20px;
+  animation: ${fadeIn} 0.22s ease;
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 `;
 
 const Title = styled.h3`
+  margin: 0;
   font-size: 20px;
-  font-weight: 700;
-  color: #111827;
+  color: ${TOKENS.textStrong};
 `;
 
 const CloseButton = styled.button`
-  border: none;
-  background: transparent;
-  font-size: 26px;
-  color: #6b7280;
+  border: 1px solid ${TOKENS.border};
+  background: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: ${TOKENS.textSoft};
   cursor: pointer;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 `;
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 10px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Field = styled.div`
@@ -263,88 +279,85 @@ const Field = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 13px;
-  font-weight: 600;
-  color: #4f46e5;
+  font-size: 12px;
+  color: ${TOKENS.textSoft};
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 `;
 
 const Input = styled.input`
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid ${TOKENS.border};
+  padding: 8px 12px;
   font-size: 14px;
-  outline: none;
+  color: ${TOKENS.textStrong};
 
   &:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    outline: none;
+    border-color: ${TOKENS.accent};
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.14);
   }
 `;
 
 const Textarea = styled.textarea`
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  font-size: 14px;
-  min-height: 90px;
+  border-radius: 10px;
+  border: 1px solid ${TOKENS.border};
+  padding: 10px 12px;
+  min-height: 96px;
   resize: none;
-  outline: none;
 
   &:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    outline: none;
+    border-color: ${TOKENS.accent};
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.14);
   }
 `;
 
 const PaymentSelector = styled.div`
   display: flex;
-  gap: 20px;
-  padding: 8px 4px;
+  gap: 16px;
+  flex-wrap: wrap;
 `;
 
 const PaymentOption = styled.label`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #111827;
-  cursor: pointer;
+  color: ${TOKENS.textStrong};
 
   input {
-    accent-color: #6366f1;
-    width: 16px;
-    height: 16px;
+    accent-color: ${TOKENS.accent};
   }
 `;
 
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 4px;
 `;
 
-const CancelButton = styled.button`
-  padding: 10px 18px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+const ButtonBase = styled.button`
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 `;
 
-const SubmitButton = styled.button`
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: none;
-  background: ${({ disabled }) => (disabled ? "#a5b4fc" : "#6366f1")};
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
+const CancelButton = styled(ButtonBase)`
+  border: 1px solid ${TOKENS.border};
+  background: #fff;
+  color: ${TOKENS.textStrong};
+`;
 
-  &:hover {
-    background: #4f46e5;
-    background: ${({ disabled }) => (disabled ? "#a5b4fc" : "#4f46e5")};
-  }
+const SubmitButton = styled(ButtonBase)`
+  border: 1px solid ${TOKENS.accent};
+  background: ${({ disabled }) => (disabled ? "#8da0b6" : TOKENS.accent)};
+  color: #fff;
 `;

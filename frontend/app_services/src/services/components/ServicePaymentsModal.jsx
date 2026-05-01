@@ -1,7 +1,17 @@
-import React, { useMemo } from "react";
+﻿import React, { useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import { formatterCurrency } from "../../utils/utils";
 import { usePayments } from "../hooks/usePayments";
+
+const TOKENS = {
+  overlay: "rgba(15, 23, 36, 0.45)",
+  surface: "#ffffff",
+  border: "#dce2e9",
+  textStrong: "#0f1724",
+  textSoft: "#60758f",
+  accent: "#0f4c81",
+  accentSoft: "#e5eef7",
+};
 
 const formatDate = (value) => {
   if (!value) return "-";
@@ -39,7 +49,6 @@ export const ServicePaymentsModal = ({ service, onClose }) => {
       ...payment,
       paidDateFormatted: formatDate(payment.paidDate),
       amountFormatted: formatterCurrency.format(Number(payment.amount) || 0),
-      methodFormatted: payment.method || "-",
       noteFormatted: payment.note || "-",
     }));
   }, [payments]);
@@ -117,7 +126,7 @@ export const ServicePaymentsModal = ({ service, onClose }) => {
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(8px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -128,57 +137,50 @@ const fadeIn = keyframes`
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: ${TOKENS.overlay};
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  padding: 18px;
+  padding: 16px;
 `;
 
 const Modal = styled.div`
   width: min(980px, 96vw);
   max-height: 88vh;
   overflow: hidden;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
-  border: 1px solid rgba(229, 231, 235, 0.9);
-  border-radius: 24px;
-  padding: 22px 24px 20px;
-  animation: ${fadeIn} 0.3s ease;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+  background: ${TOKENS.surface};
+  border: 1px solid ${TOKENS.border};
+  border-radius: 16px;
+  padding: 18px;
+  animation: ${fadeIn} 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid #eef2f7;
 `;
 
 const Title = styled.h3`
   font-size: 20px;
-  font-weight: 650;
-  color: #111827;
+  color: ${TOKENS.textStrong};
   margin: 0;
 `;
 
 const CloseButton = styled.button`
-  border: none;
-  background: transparent;
-  font-size: 30px;
-  line-height: 1;
-  color: #6b7280;
+  border: 1px solid ${TOKENS.border};
+  background: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: ${TOKENS.textSoft};
   cursor: pointer;
-  border-radius: 12px;
-  padding: 6px 10px;
-
-  &:hover {
-    background: rgba(17, 24, 39, 0.06);
-  }
 `;
 
 const Subheader = styled.div`
@@ -188,17 +190,13 @@ const Subheader = styled.div`
 
 const ServiceName = styled.div`
   font-size: 14px;
-  font-weight: 600;
-  color: #4f46e5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: ${TOKENS.textStrong};
 `;
 
 const StatsRow = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
 
   @media (max-width: 820px) {
     grid-template-columns: 1fr;
@@ -206,67 +204,46 @@ const StatsRow = styled.div`
 `;
 
 const Stat = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid ${TOKENS.border};
+  border-radius: 10px;
+  padding: 8px 10px;
   display: grid;
   gap: 4px;
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.04);
 `;
 
 const StatLabel = styled.div`
   font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  color: ${TOKENS.textSoft};
 `;
 
 const StatValue = styled.div`
   font-size: 14px;
+  color: ${TOKENS.textStrong};
   font-weight: 700;
-  color: #111827;
 `;
 
 const InfoText = styled.div`
   font-size: 14px;
-  color: #374151;
-  padding: 10px 0;
+  color: ${TOKENS.textSoft};
+  padding: 8px 0;
 `;
 
 const ErrorText = styled.div`
   font-size: 13px;
-  font-weight: 600;
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.08);
+  color: #b42318;
+  background: #fef2f2;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 10px;
 `;
 
 const TableWrapper = styled.div`
   width: 100%;
   overflow: auto;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  border: 1px solid #e6ebf1;
   max-height: 56vh;
-  background: rgba(249, 250, 251, 0.55);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(107, 114, 128, 0.35);
-    border-radius: 999px;
-    border: 2px solid rgba(249, 250, 251, 0.9);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(107, 114, 128, 0.5);
-  }
+  background: #f9fbfd;
 `;
 
 const Table = styled.table`
@@ -276,17 +253,16 @@ const Table = styled.table`
   thead {
     position: sticky;
     top: 0;
-    background: #eef2ff;
+    background: #f3f7fb;
     z-index: 1;
-    box-shadow: 0 1px 0 rgba(17, 24, 39, 0.06);
 
     th {
-      padding: 12px 14px;
+      padding: 10px 12px;
       text-align: left;
-      font-weight: 600;
-      font-size: 13px;
-      color: #4f46e5;
-      white-space: nowrap;
+      font-size: 12px;
+      color: ${TOKENS.textSoft};
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     th:nth-child(2) {
@@ -295,37 +271,20 @@ const Table = styled.table`
   }
 
   tbody {
-    tr:nth-child(even) {
-      background: #f9fafb;
-    }
-
-    tr {
-      transition: background 120ms ease;
-    }
-
     tr:hover {
-      background: rgba(238, 242, 255, 0.65);
+      background: #f4f8fc;
     }
 
     td {
-      padding: 12px 14px;
+      padding: 10px 12px;
       font-size: 13px;
-      color: #111827;
-      text-align: left;
-      border-bottom: 1px solid #eef2f7;
-      white-space: nowrap;
+      color: ${TOKENS.textStrong};
+      border-bottom: 1px solid #eef2f6;
     }
 
     td:nth-child(2) {
       text-align: right;
       font-weight: 700;
-    }
-
-    td:nth-child(4) {
-      max-width: 420px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     tr:last-child td {
@@ -340,15 +299,12 @@ const Footer = styled.div`
 `;
 
 const CloseFooterButton = styled.button`
-  padding: 10px 18px;
-  border-radius: 12px;
-  border: none;
-  background: #eef2ff;
-  color: #4f46e5;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #c8d9ea;
+  background: ${TOKENS.accentSoft};
+  color: ${TOKENS.accent};
   font-weight: 600;
   cursor: pointer;
-
-  &:hover {
-    background: rgba(99, 102, 241, 0.14);
-  }
 `;

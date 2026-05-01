@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+﻿import React, { useMemo, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useServices } from "../hooks/useServices";
 import {
@@ -24,6 +24,19 @@ import { MAX_LENGTH } from "../../utils/constants";
 import { usePagedLoad } from "../hooks/usePagedLoad";
 
 const { ALL, PAID, UNPAID } = KEYS_FILTERS;
+
+const TOKENS = {
+  surface: "#ffffff",
+  border: "#dce2e9",
+  textStrong: "#0f1724",
+  textSoft: "#60758f",
+  accent: "#0f4c81",
+  accentSoft: "#e5eef7",
+  successBg: "#e8f7f1",
+  successText: "#127a56",
+  warningBg: "#fdf1e4",
+  warningText: "#9a5a17",
+};
 
 export const Services = ({ dateFilter, setDateFilter }) => {
   const [selectedFilter, setSelectedFilter] = useState(ALL);
@@ -80,9 +93,7 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       }),
       ...(column.key === "status" && {
         render: ({ status }) => (
-          <TextPaid $status={status}>
-            {status ? "Pagado" : "No pagado"}
-          </TextPaid>
+          <StatusBadge $status={status}>{status ? "Pagado" : "No pagado"}</StatusBadge>
         ),
       }),
       ...(column.key === "description" && {
@@ -129,68 +140,83 @@ export const Services = ({ dateFilter, setDateFilter }) => {
 
   const { paginatedData: pagedServices, observeIntersection } = usePagedLoad({
     data: servicesFormatted,
-    pageSize: 3,
+    pageSize: 6,
   });
 
   return (
     <Container>
-      <TopContainer>
-        <DateInputWrapper>
-          <Label>Fecha:</Label>
-          <DateInput
-            type="date"
-            value={dateFilter}
-            onChange={({ target: { value } }) => setDateFilter(value)}
-          />
-        </DateInputWrapper>
-      </TopContainer>
+      <HeaderPanel>
+        <HeaderTop>
+          <HeaderCopy>
+            <Title>Servicios</Title>
+            <Subtitle>Administra entregas, cobros y seguimiento operativo.</Subtitle>
+          </HeaderCopy>
 
-      <MiddleContainer>
-        <FilterGroup>
+          <CreateButton
+            onClick={() => {
+              setServiceInfoEdit({});
+              setShowServiceModal(true);
+            }}
+          >
+            + Crear servicio
+          </CreateButton>
+        </HeaderTop>
+
+        <ControlsRow>
+          <DateField>
+            <Label htmlFor="service-date">Fecha de análisis</Label>
+            <DateInput
+              id="service-date"
+              type="date"
+              value={dateFilter}
+              onChange={({ target: { value } }) => setDateFilter(value)}
+            />
+          </DateField>
+
+          <SearchField>
+            <SearchIcon viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.6-3.6" />
+            </SearchIcon>
+            <SearchInput
+              type="text"
+              placeholder="Buscar por nombre o descripción"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </SearchField>
+        </ControlsRow>
+
+        <PillsRow>
           {SERVICE_FILTERS.map(({ key, label }) => (
-            <FilterLabel key={key}>
-              <input
-                type="radio"
-                name="service-filter"
-                checked={selectedFilter === label}
-                onChange={() => setSelectedFilter(label)}
-              />
+            <FilterPill
+              key={key}
+              $active={selectedFilter === label}
+              onClick={() => setSelectedFilter(label)}
+              type="button"
+            >
               {label}
-            </FilterLabel>
+            </FilterPill>
           ))}
-        </FilterGroup>
+        </PillsRow>
+      </HeaderPanel>
 
-        <SearchInput
-          type="text"
-          placeholder="Buscar servicio..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </MiddleContainer>
+      <TablePanel>
+        <TableHeader>
+          <TableTitle>Listado de servicios</TableTitle>
+          <TableCount>{servicesFormatted.length} resultados</TableCount>
+        </TableHeader>
 
-      <HeaderTable>
-        <Title>Mis servicios</Title>
-        <CreateButton
-          onClick={() => {
-            setServiceInfoEdit({});
-            setShowServiceModal(true);
-          }}
-        >
-          + Crear servicio
-        </CreateButton>
-      </HeaderTable>
-
-      <BottomContainer>
         <TableService
           columns={columnsFormatted}
           data={pagedServices}
           observeIntersection={observeIntersection}
         />
-      </BottomContainer>
+      </TablePanel>
 
       {showInformative && (
         <InformativeModal
-          title="Descripcion"
+          title="Descripción"
           description={description}
           onClose={() => setShowInformative(false)}
         />
@@ -233,7 +259,7 @@ export const Services = ({ dateFilter, setDateFilter }) => {
       {showDeleteModal && (
         <DeleteModal
           title="Eliminar servicio"
-          content="¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer."
+          content="¿Estás seguro de eliminar este servicio? Esta acción no se puede deshacer."
           onConfirm={() => handleDeleteService(deletedServiceId)}
           onCancel={() => setShowDeleteModal(false)}
         />
@@ -247,176 +273,239 @@ export default Services;
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.99);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 `;
 
 const Container = styled.div`
   width: 100%;
   min-height: 600px;
-  padding: 32px;
-  background: #f3f4f6;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  animation: ${fadeIn} 0.6s ease;
-`;
+  gap: 14px;
+  animation: ${fadeIn} 0.35s ease;
 
-const TopContainer = styled.div`
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 20px;
-  display: flex;
-  justify-content: flex-start;
-`;
-
-const DateInput = styled.input`
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
-  outline: none;
-  transition: all 0.25s ease;
-  cursor: pointer;
-
-  &:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  @media (max-width: 900px) {
+    padding: 6px;
   }
 `;
-const DateInputWrapper = styled.div`
+
+const HeaderPanel = styled.section`
+  background: ${TOKENS.surface};
+  border: 1px solid ${TOKENS.border};
+  border-radius: 16px;
+  padding: 16px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
+  flex-direction: column;
+  gap: 14px;
 `;
 
-const MiddleContainer = styled.div`
-  background: #ffffff;
-  padding: 20px 24px;
-  border-radius: 20px;
+const HeaderTop = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
   flex-wrap: wrap;
 `;
 
-const FilterGroup = styled.div`
+const HeaderCopy = styled.div`
   display: flex;
-  gap: 12px;
-  align-items: center;
-`;
-
-const FilterLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #4f46e5;
-  cursor: pointer;
-
-  input {
-    accent-color: #6366f1;
-    width: 16px;
-    height: 16px;
-  }
-`;
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: 600;
-  color: #4f46e5;
-`;
-
-const SearchInput = styled.input`
-  width: 320px;
-  padding: 14px 18px;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  font-size: 15px;
-  color: #111827;
-  outline: none;
-  transition: all 0.25s ease;
-
-  &:focus {
-    background: #ffffff;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-  }
-
-  &::placeholder {
-    color: #9ca3af;
-    font-weight: 500;
-  }
-`;
-
-const HeaderTable = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 8px;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const Title = styled.h2`
-  font-size: 22px;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: -0.3px;
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  color: ${TOKENS.textStrong};
+`;
+
+const Subtitle = styled.p`
+  margin: 0;
+  font-size: 13px;
+  color: ${TOKENS.textSoft};
 `;
 
 const CreateButton = styled.button`
-  padding: 10px 18px;
-  border-radius: 12px;
-  border: none;
-  background: #111827;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-
-  &:hover {
-    background: #0f172a;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const TextDescription = styled.div`
-  cursor: pointer;
-  text-align: ${({ $isMaxlength }) => ($isMaxlength ? "left" : "center")};
-  max-width: 200px;
-
-  &:hover {
-    color: #3c70be;
-  }
-`;
-
-const TextPaid = styled.div`
-  background: ${({ $status }) => ($status ? "#3e9922b5" : "#a32828bc")};
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid ${TOKENS.accent};
+  background: ${TOKENS.accent};
   color: #fff;
-  border-radius: 20px;
-  padding: 4px 20px;
-  display: flex;
-  justify-content: center;
+  font-size: 14px;
   font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #0c3d69;
+  }
 `;
 
-const BottomContainer = styled.div`
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 20px;
+const ControlsRow = styled.div`
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 10px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const DateField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const Label = styled.label`
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${TOKENS.textSoft};
+`;
+
+const DateInput = styled.input`
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid ${TOKENS.border};
+  padding: 8px 12px;
+  color: ${TOKENS.textStrong};
+
+  &:focus {
+    outline: none;
+    border-color: ${TOKENS.accent};
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.13);
+  }
+`;
+
+const SearchField = styled.div`
+  min-height: 40px;
+  border: 1px solid ${TOKENS.border};
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: #fff;
+
+  &:focus-within {
+    border-color: ${TOKENS.accent};
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.13);
+  }
+`;
+
+const SearchIcon = styled.svg`
+  width: 16px;
+  height: 16px;
+  stroke: #7389a3;
+  stroke-width: 2;
+  fill: none;
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  color: ${TOKENS.textStrong};
+  font-size: 14px;
+
+  &::placeholder {
+    color: #8ca0b6;
+  }
+`;
+
+const PillsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+`;
+
+const FilterPill = styled.button`
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid ${(props) => (props.$active ? "#c9dceb" : TOKENS.border)};
+  background: ${(props) => (props.$active ? TOKENS.accentSoft : "#fff")};
+  color: ${(props) => (props.$active ? TOKENS.accent : TOKENS.textSoft)};
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #c9dceb;
+    color: ${TOKENS.accent};
+  }
+`;
+
+const TablePanel = styled.section`
+  background: ${TOKENS.surface};
+  border: 1px solid ${TOKENS.border};
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const TableHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+`;
+
+const TableTitle = styled.h3`
+  margin: 0;
+  font-size: 16px;
+  color: ${TOKENS.textStrong};
+`;
+
+const TableCount = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${TOKENS.textSoft};
+  background: #f6f9fc;
+  border: 1px solid #e6edf4;
+  border-radius: 999px;
+  padding: 4px 9px;
+`;
+
+const TextDescription = styled.button`
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #324a63;
+  text-align: left;
+  max-width: 220px;
+  padding: 0;
+  text-decoration: ${({ $isMaxlength }) => ($isMaxlength ? "underline" : "none")};
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: ${TOKENS.accent};
+  }
+`;
+
+const StatusBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ $status }) => ($status ? TOKENS.successText : TOKENS.warningText)};
+  background: ${({ $status }) => ($status ? TOKENS.successBg : TOKENS.warningBg)};
 `;
