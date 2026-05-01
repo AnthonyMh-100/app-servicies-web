@@ -33,7 +33,8 @@ export const MENUS_KEYS = {
 export const MENUS = [
   {
     key: MENUS_KEYS.HOME,
-    name: "Home",
+    name: "Dashboard",
+    section: "general",
     Icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M3 12l9-9 9 9h-3v9h-12v-9H3z" />
@@ -42,7 +43,8 @@ export const MENUS = [
   },
   {
     key: MENUS_KEYS.SERVICES,
-    name: "Services",
+    name: "Servicios",
+    section: "general",
     Icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M10 2h4a2 2 0 0 1 2 2v2h3a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V10a2 2 0 0 1 2-2h3V4a2 2 0 0 1 2-2Zm4 2h-4v2h4V4Zm6 6H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9Z" />
@@ -51,7 +53,8 @@ export const MENUS = [
   },
   {
     key: MENUS_KEYS.HISTORY,
-    name: "History",
+    name: "Historial",
+    section: "workspace",
     Icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 5a7 7 0 1 1-6.32 4H3l3.8-3.8L10.6 9H8.1A5 5 0 1 0 12 7v2l4-3-4-3v2Z" />

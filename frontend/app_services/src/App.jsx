@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import moment from "moment";
 import { useReactiveVar } from "@apollo/client/react";
@@ -6,17 +6,15 @@ import { companyNameVar, companyUserNameVar } from "./graphql/reactiveVars";
 import { useLogout } from "./services/hooks/useLogout";
 
 const colors = {
-  primary: "#6366f1",
-  primaryLight: "#818cf8",
-  secondary: "#4f46e5",
-  secondaryBg: "#eef2ff",
-  secondaryHover: "#e0e7ff",
-  secondaryActive: "#c7d2fe",
-  textDark: "#111827",
-  textGray: "#6b7280",
-  inputBg: "#f9fafb",
-  inputBgFocus: "#ffffff",
-  borderFocus: "rgba(99, 102, 241, 0.18)",
+  bg: "#eef1f5",
+  surface: "#f8fafc",
+  surfaceElevated: "#ffffff",
+  border: "#dce2e9",
+  textStrong: "#0f1724",
+  textSoft: "#60758f",
+  accent: "#0f4c81",
+  accentSoft: "#e5eef7",
+  accentSoftHover: "#dbe8f5",
 };
 
 function App({
@@ -29,6 +27,8 @@ function App({
 }) {
   const logout = useLogout();
   const [dateFilter, setDateFilter] = useState(moment().format("YYYY-MM-DD"));
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   const companyName = useReactiveVar(companyNameVar);
   const companyUserName = useReactiveVar(companyUserNameVar);
 
@@ -42,15 +42,41 @@ function App({
     () => screenContent[activeTab]?.screen,
     [activeTab, screenContent],
   );
+
+  const menusBySection = useMemo(() => {
+    return menus?.reduce(
+      (acc, currentMenu) => {
+        const sectionKey = currentMenu.section || "general";
+        if (!acc[sectionKey]) acc[sectionKey] = [];
+        acc[sectionKey].push(currentMenu);
+        return acc;
+      },
+      { general: [], workspace: [] },
+    );
+  }, [menus]);
+
+  const handleSelectMenu = (menuKey) => {
+    setActiveTab(menuKey);
+    setIsMobileSidebarOpen(false);
+  };
+
   return (
     <Container>
-      <Sidebar $collapsed={collapsed}>
+      <MobileOverlay
+        $visible={isMobileSidebarOpen}
+        onClick={() => setIsMobileSidebarOpen(false)}
+      />
+
+      <Sidebar $collapsed={collapsed} $mobileOpen={isMobileSidebarOpen}>
         <SidebarTop>
           <Brand $collapsed={collapsed}>
             <BrandMark aria-hidden="true">{brandInitials}</BrandMark>
-            <BrandText $collapsed={collapsed} title={companyName}>
-              {companyName}
-            </BrandText>
+            <BrandContent $collapsed={collapsed}>
+              <BrandText title={companyName}>
+                {companyName || "Workspace Services"}
+              </BrandText>
+              <BrandMeta>Panel Operativo</BrandMeta>
+            </BrandContent>
             <CollapseButton
               type="button"
               onClick={() => setCollapsed(!collapsed)}
@@ -58,35 +84,51 @@ function App({
               title={collapsed ? "Expandir" : "Colapsar"}
               $collapsed={collapsed}
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-                focusable="false"
-              >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
               </svg>
             </CollapseButton>
           </Brand>
 
-          <NavLabel $collapsed={collapsed}>Menú</NavLabel>
-          <Menu>
-            {menus?.map((menu) => {
-              return (
+          <MenuSection>
+            <NavLabel $collapsed={collapsed}>General</NavLabel>
+            <Menu>
+              {menusBySection.general?.map((menu) => (
                 <MenuItem
                   key={menu.key}
                   $active={activeTab === menu.key}
                   $collapsed={collapsed}
-                  onClick={() => setActiveTab(menu.key)}
+                  onClick={() => handleSelectMenu(menu.key)}
                 >
                   <MenuIconWrap $active={activeTab === menu.key}>
                     <menu.Icon />
                   </MenuIconWrap>
                   <span title={menu.name}>{menu.name}</span>
                 </MenuItem>
-              );
-            })}
-          </Menu>
+              ))}
+            </Menu>
+          </MenuSection>
+
+          {!!menusBySection.workspace?.length && (
+            <MenuSection>
+              <NavLabel $collapsed={collapsed}>Workspace</NavLabel>
+              <Menu>
+                {menusBySection.workspace.map((menu) => (
+                  <MenuItem
+                    key={menu.key}
+                    $active={activeTab === menu.key}
+                    $collapsed={collapsed}
+                    onClick={() => handleSelectMenu(menu.key)}
+                  >
+                    <MenuIconWrap $active={activeTab === menu.key}>
+                      <menu.Icon />
+                    </MenuIconWrap>
+                    <span title={menu.name}>{menu.name}</span>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </MenuSection>
+          )}
         </SidebarTop>
 
         <LogoutButton
@@ -118,6 +160,19 @@ function App({
       </Sidebar>
 
       <Content>
+        <MobileTopbar>
+          <MobileMenuButton
+            type="button"
+            aria-label="Abrir menú"
+            onClick={() => setIsMobileSidebarOpen(true)}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+            </svg>
+          </MobileMenuButton>
+          <MobileTitle>{companyName || "Workspace Services"}</MobileTitle>
+        </MobileTopbar>
+
         <ScreenCurrent dateFilter={dateFilter} setDateFilter={setDateFilter} />
       </Content>
     </Container>
@@ -140,26 +195,48 @@ const fadeIn = keyframes`
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
-  background: #f3f4f6;
+  background: ${colors.bg};
+`;
+
+const MobileOverlay = styled.div`
+  display: none;
+
+  @media (max-width: 900px) {
+    display: ${(props) => (props.$visible ? "block" : "none")};
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    background: rgba(15, 23, 36, 0.45);
+  }
 `;
 
 const Sidebar = styled.div`
-  width: ${(props) => (props.$collapsed ? "76px" : "240px")};
-  background: #ffffff;
+  width: ${(props) => (props.$collapsed ? "86px" : "266px")};
+  background: ${colors.surfaceElevated};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: ${(props) => (props.$collapsed ? "18px 14px" : "18px 16px")};
-  border-right: 1px solid #eef2f7;
-  box-shadow: 2px 0 14px rgba(17, 24, 39, 0.04);
+  padding: ${(props) => (props.$collapsed ? "18px 14px" : "20px 16px")};
+  border-right: 1px solid ${colors.border};
   animation: ${fadeIn} 0.4s ease;
-  transition: width 0.4s ease;
+  transition: width 0.25s ease;
+
+  @media (max-width: 900px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 20;
+    width: 276px;
+    transform: translateX(${(props) => (props.$mobileOpen ? "0" : "-104%")});
+    transition: transform 0.25s ease;
+  }
 `;
 
 const SidebarTop = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
 `;
 
 const Brand = styled.div`
@@ -167,7 +244,7 @@ const Brand = styled.div`
   grid-template-columns: 40px 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 6px 6px;
+  padding: 6px;
   border-radius: 14px;
 
   ${(props) =>
@@ -175,7 +252,6 @@ const Brand = styled.div`
       ? `
     grid-template-columns: 1fr;
     justify-items: center;
-    padding: 6px 6px;
   `
       : ""}
 `;
@@ -183,23 +259,24 @@ const Brand = styled.div`
 const BrandMark = styled.div`
   width: 40px;
   height: 40px;
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    ${colors.primary} 0%,
-    ${colors.secondary} 100%
-  );
+  border-radius: 12px;
+  background: ${colors.accent};
   color: #ffffff;
   display: grid;
   place-items: center;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.04em;
-  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.22);
+`;
+
+const BrandContent = styled.div`
+  display: ${(props) => (props.$collapsed ? "none" : "flex")};
+  flex-direction: column;
+  gap: 2px;
 `;
 
 const BrandText = styled.div`
-  color: ${colors.textDark};
+  color: ${colors.textStrong};
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
@@ -207,8 +284,12 @@ const BrandText = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+`;
 
-  ${(props) => (props.$collapsed ? "display:none;" : "")}
+const BrandMeta = styled.span`
+  color: ${colors.textSoft};
+  font-size: 12px;
+  font-weight: 500;
 `;
 
 const CollapseButton = styled.button`
@@ -216,22 +297,16 @@ const CollapseButton = styled.button`
   height: 34px;
   display: grid;
   place-items: center;
-  border: none;
-  background: rgba(17, 24, 39, 0.03);
-  color: ${colors.textGray};
-  font-size: 14px;
-  font-weight: 700;
+  border: 1px solid ${colors.border};
+  background: ${colors.surface};
+  color: ${colors.textSoft};
   cursor: pointer;
-  border-radius: 12px;
-  transition: all 0.25s ease;
+  border-radius: 10px;
+  transition: border-color 0.2s ease;
 
   &:hover {
-    background: rgba(17, 24, 39, 0.06);
-    color: ${colors.textDark};
-  }
-
-  &:active {
-    transform: translateY(1px);
+    border-color: #b9c8d8;
+    color: ${colors.textStrong};
   }
 
   ${(props) => (props.$collapsed ? "margin-top: 10px;" : "")}
@@ -243,12 +318,18 @@ const CollapseButton = styled.button`
   }
 `;
 
+const MenuSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 const NavLabel = styled.div`
   font-size: 11px;
-  font-weight: 800;
-  color: ${colors.textGray};
+  font-weight: 700;
+  color: ${colors.textSoft};
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   padding: 0 10px;
   ${(props) => (props.$collapsed ? "display:none;" : "")}
 `;
@@ -256,7 +337,7 @@ const NavLabel = styled.div`
 const Menu = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 `;
 
 const MenuItem = styled.button`
@@ -265,22 +346,16 @@ const MenuItem = styled.button`
   align-items: center;
   gap: ${(props) => (props.$collapsed ? "0" : "12px")};
   justify-content: ${(props) => (props.$collapsed ? "center" : "flex-start")};
-  padding: ${(props) => (props.$collapsed ? "12px 10px" : "12px 12px")};
+  padding: ${(props) => (props.$collapsed ? "10px 8px" : "10px 12px")};
   border-radius: 12px;
-  border: none;
-  background: ${(props) =>
-    props.$active ? "rgba(99, 102, 241, 0.10)" : "transparent"};
-  color: ${colors.textDark};
+  border: 1px solid transparent;
+  background: ${(props) => (props.$active ? colors.accentSoft : "transparent")};
+  color: ${(props) => (props.$active ? colors.textStrong : colors.textSoft)};
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
-  transition: all 0.25s ease;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
+  transition: background-color 0.2s ease;
 
   span {
     display: ${(props) => (props.$collapsed ? "none" : "inline")};
@@ -288,17 +363,37 @@ const MenuItem = styled.button`
 
   &:hover {
     background: ${(props) =>
-      props.$active ? "rgba(99, 102, 241, 0.12)" : "rgba(17, 24, 39, 0.04)"};
+      props.$active ? colors.accentSoftHover : "#eef3f8"};
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgba(15, 76, 129, 0.35);
+  }
+`;
+
+const MenuIconWrap = styled.div`
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: ${(props) => (props.$active ? colors.accent : colors.textSoft)};
+  background: ${(props) => (props.$active ? "#f3f7fc" : "transparent")};
+
+  svg {
+    width: 20px;
+    height: 20px;
   }
 `;
 
 const ContainerLogout = styled.div`
   min-height: 36px;
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   gap: 12px;
-  color: ${colors.secondary};
+  color: #8e2d2d;
   flex-shrink: 0;
 
   svg {
@@ -307,37 +402,23 @@ const ContainerLogout = styled.div`
   }
 `;
 
-const MenuIconWrap = styled.div`
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  color: ${(props) => (props.$active ? colors.secondary : colors.textGray)};
-`;
-
 const LogoutButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: ${(props) => (props.$collapsed ? "center" : "flex-start")};
   gap: ${(props) => (props.$collapsed ? "0" : "12px")};
-  padding: ${(props) => (props.$collapsed ? "12px 10px" : "12px 12px")};
+  padding: ${(props) => (props.$collapsed ? "10px 8px" : "10px 12px")};
   border-radius: 12px;
-  border: none;
-  background: rgba(17, 24, 39, 0.04);
-  color: ${colors.secondary};
+  border: 1px solid transparent;
+  background: transparent;
+  color: #8e2d2d;
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
-  text-align: center;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: rgba(17, 24, 39, 0.06);
-  }
-
-  &:active {
-    transform: translateY(1px);
+    background: #fbefef;
   }
 
   span {
@@ -348,5 +429,44 @@ const LogoutButton = styled.button`
 const Content = styled.div`
   flex: 1;
   padding: 22px 32px;
-  background: #f3f4f6;
+  background: ${colors.bg};
+
+  @media (max-width: 900px) {
+    padding: 14px;
+  }
+`;
+
+const MobileTopbar = styled.div`
+  display: none;
+
+  @media (max-width: 900px) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 10px 4px;
+  }
+`;
+
+const MobileMenuButton = styled.button`
+  border: 1px solid ${colors.border};
+  background: ${colors.surfaceElevated};
+  color: ${colors.textStrong};
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const MobileTitle = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${colors.textStrong};
 `;

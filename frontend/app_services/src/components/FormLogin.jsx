@@ -7,7 +7,10 @@ import { InformativeModal } from "./InformativeModal";
 const { REGISTER } = SECCTION_LOGIN_KEY;
 
 export const FormLogin = ({ setTabIndex }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    username: "",
+    password: "",
+  });
 
   const { handleSubmit, isError, setIsError } = useServices({});
 
@@ -19,32 +22,56 @@ export const FormLogin = ({ setTabIndex }) => {
     }));
   };
 
+  const isDisabled =
+    !user.username?.trim().length || !user.password?.trim().length;
+
   return (
     <>
-      <Card>
+      <Card aria-label="Formulario de inicio de sesión">
         <Header>
-          <Title>Bienvenido</Title>
-          <Subtitle>Ingresa tus credenciales</Subtitle>
+          <Eyebrow>Acceso</Eyebrow>
+          <Title>Inicia sesion</Title>
+          <Subtitle>
+            Continua con tu cuenta para administrar servicios y cobros.
+          </Subtitle>
         </Header>
 
         <Form onSubmit={(e) => handleSubmit(e, user)}>
-          <Input
-            type="text"
-            placeholder="Username"
-            autoComplete="username"
-            name="username"
-            onChange={handleFieldsUser}
-          />
+          <Field>
+            <Label htmlFor="username">Usuario</Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder="Tu usuario"
+              autoComplete="username"
+              name="username"
+              value={user.username}
+              onChange={handleFieldsUser}
+              aria-invalid={Boolean(isError)}
+            />
+          </Field>
 
-          <Input
-            type="password"
-            placeholder="Password"
-            autoComplete="current-password"
-            name="password"
-            onChange={handleFieldsUser}
-          />
+          <Field>
+            <Label htmlFor="password">Contraseña</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              autoComplete="current-password"
+              name="password"
+              value={user.password}
+              onChange={handleFieldsUser}
+              aria-invalid={Boolean(isError)}
+            />
+          </Field>
 
-          <Button type="submit">Ingresar</Button>
+          <Button type="submit" disabled={isDisabled}>
+            Ingresar
+          </Button>
+
+          <Divider>
+            <span>o</span>
+          </Divider>
 
           <SecondaryButton type="button" onClick={() => setTabIndex(REGISTER)}>
             Crear empresa
@@ -82,156 +109,224 @@ const Container = styled.div`
 `;
 
 const Card = styled.div`
-  width: min(520px, 94vw);
-  padding: 44px 44px 36px;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 26px;
-  border: 1px solid rgba(229, 231, 235, 0.9);
-  box-shadow:
-    0 34px 80px rgba(17, 24, 39, 0.12),
-    0 8px 24px rgba(17, 24, 39, 0.06);
+  width: min(420px, 100%);
+  padding: 4px;
+  background: transparent;
+  border-radius: 16px;
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  gap: 22px;
+  gap: 20px;
   animation: ${fadeIn} 0.6s ease;
-  position: relative;
-
-  @supports (
-    (-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))
-  ) {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 180px;
-    height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #6366f1, #818cf8);
-    opacity: 0.75;
-    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.22);
-  }
 `;
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  text-align: center;
-  padding-top: 6px;
+  gap: 10px;
+`;
+
+const Eyebrow = styled.span`
+  font-size: 12px;
+  color: #60758f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 `;
 
 const Title = styled.h1`
   margin: 0;
-  font-size: 30px;
-  font-weight: 800;
-  color: #111827;
-  text-align: center;
-  letter-spacing: -0.4px;
+  font-size: 34px;
+  font-weight: 700;
+  color: #0f1724;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
 `;
 
 const Subtitle = styled.p`
   margin: 0;
-  font-size: 14px;
-  color: #6b7280;
-  text-align: center;
-  line-height: 1.5;
+  font-size: 15px;
+  color: #60758f;
+  line-height: 1.6;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin-top: 4px;
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Label = styled.label`
+  font-size: 13px;
+  font-weight: 600;
+  color: #243446;
 `;
 
 const Input = styled.input`
-  padding: 16px 16px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 11px;
+  border: 1px solid #ccd6e2;
+  background: #ffffff;
   font-size: 15px;
-  color: #111827;
+  color: #0f1724;
   outline: none;
-  transition: all 0.25s ease;
+  transition: border-color 0.2s ease;
 
   &:hover {
-    border-color: #d1d5db;
-    background: #ffffff;
+    border-color: #8ea2bf;
   }
 
   &:focus {
-    background: #ffffff;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+    border-color: #0f4c81;
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.18);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: #b42318;
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.16);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: #8da0b6;
+  }
+`;
+
+const InlineRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const GhostLink = styled.button`
+  border: none;
+  background: transparent;
+  color: #0f4c81;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: #0b3558;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #0f4c81;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 `;
 
 const Button = styled.button`
-  margin-top: 12px;
-  padding: 16px;
-  border-radius: 16px;
-  border: none;
-  background: linear-gradient(135deg, #6366f1, #818cf8);
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 36px rgba(99, 102, 241, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow:
-      0 18px 36px rgba(99, 102, 241, 0.34),
-      0 0 0 4px rgba(99, 102, 241, 0.22);
-  }
-`;
-
-const SecondaryButton = styled.button`
   margin-top: 6px;
-  padding: 14px;
-  border: 1px solid rgba(199, 210, 254, 0.95);
-  border-radius: 16px;
-  background: rgba(238, 242, 255, 0.75);
-  color: #4f46e5;
+  min-height: 46px;
+  border-radius: 11px;
+  border: 1px solid #0f4c81;
+  background: #0f4c81;
+  color: #ffffff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: rgba(224, 231, 255, 0.85);
-    border-color: rgba(165, 180, 252, 0.95);
-    transform: translateY(-1px);
+    background: #0c3d69;
   }
 
-  &:active {
-    transform: translateY(0);
-    background: rgba(199, 210, 254, 0.9);
+  &:disabled {
+    cursor: not-allowed;
+    background: #8da0b6;
+    border-color: #8da0b6;
   }
 
   &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+    outline: 3px solid rgba(15, 76, 129, 0.25);
+    outline-offset: 1px;
+  }
+`;
+
+const Divider = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #d9e1ea;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7a8ea6;
+    background: #f8fafc;
+  }
+`;
+
+const GoogleButton = styled.button`
+  min-height: 46px;
+  border-radius: 11px;
+  border: 1px solid #ccd6e2;
+  background: #ffffff;
+  color: #243446;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: #8ea2bf;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(15, 76, 129, 0.18);
+    outline-offset: 1px;
+  }
+`;
+
+const GoogleIcon = styled.svg`
+  width: 18px;
+  height: 18px;
+  color: #334a63;
+`;
+
+const SecondaryButton = styled.button`
+  min-height: 46px;
+  border: 1px solid #ccd6e2;
+  border-radius: 11px;
+  background: #f2f5f8;
+  color: #243446;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #e9eef3;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(15, 76, 129, 0.18);
+    outline-offset: 1px;
   }
 `;
