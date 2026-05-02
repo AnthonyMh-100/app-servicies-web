@@ -108,7 +108,6 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   min-width: 920px;
-  min-height: 500px;
 
   thead {
     background: #f7fafd;
