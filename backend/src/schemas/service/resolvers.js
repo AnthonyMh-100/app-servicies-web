@@ -20,8 +20,7 @@ export const serviceMutationsResolver = {
     const { id: serviceId, total: serviceTotal } = service;
 
     if (isCompleted) {
-      const paidDate =
-        serviceInfo.createdDate || moment().format("YYYY-MM-DD");
+      const paidDate = serviceInfo.createdDate || moment().format("YYYY-MM-DD");
       await Payment.create({
         serviceId,
         paidDate,
@@ -73,7 +72,10 @@ export const serviceMutationsResolver = {
       }
 
       const isCompleted = Number(totalPaid) === Number(totalService);
-      const totalPending = Math.max(Number(totalService) - Number(totalPaid), 0);
+      const totalPending = Math.max(
+        Number(totalService) - Number(totalPaid),
+        0,
+      );
 
       await service.update(
         {
@@ -182,9 +184,6 @@ export const serviceQueriesResolver = {
         {
           association: Service.associations.payments,
           required: false,
-          where: {
-            paidDate: date,
-          },
         },
       ],
       order: [

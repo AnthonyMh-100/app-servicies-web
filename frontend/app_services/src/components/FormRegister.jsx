@@ -36,7 +36,9 @@ export const FormRegister = ({ setTabIndex }) => {
       <Header>
         <Eyebrow>Registro</Eyebrow>
         <Title>Crea tu empresa</Title>
-        <Subtitle>Configura tu espacio para empezar a gestionar servicios.</Subtitle>
+        <Subtitle>
+          Configura tu espacio para empezar a gestionar servicios.
+        </Subtitle>
       </Header>
 
       <Form onSubmit={(e) => handleSubmitRegister(e, userRegister)}>
@@ -67,11 +69,11 @@ export const FormRegister = ({ setTabIndex }) => {
         </Field>
 
         <Field>
-          <Label htmlFor="company-email">Correo electrónico</Label>
+          <Label htmlFor="username">Ususario</Label>
           <Input
-            id="company-email"
-            type="email"
-            placeholder="tuempresa@correo.com"
+            id="username"
+            type="text"
+            placeholder="Tu ususario"
             autoComplete="username"
             name="username"
             value={userRegister.username}

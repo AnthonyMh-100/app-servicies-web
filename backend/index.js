@@ -69,7 +69,7 @@ await server.start();
 
 await sequelize.authenticate();
 
-await sequelize.sync({ alter: true });
+// await sequelize.sync({ alter: true });
 
 app.use(
   "/graphql",
@@ -91,5 +91,5 @@ await new Promise((resolve) =>
   httpServer.listen({ port: process.env.PORT }, resolve),
 );
 console.log(
-  `🚀 Servidor listo en http://localhost:${process.env.PORT}/graphql`,
+  `Servidor listo en ${process.env.APP_URL_PROD || `http://localhost:${process.env.PORT}/graphql`}`,
 );
