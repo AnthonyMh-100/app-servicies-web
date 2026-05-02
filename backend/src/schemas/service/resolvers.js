@@ -141,10 +141,7 @@ export const serviceQueriesResolver = {
         limit: limitPerPage,
         offset: limitPerPage * page,
       }),
-      order: [
-        ["id", "DESC"],
-        ["createdDate", "DESC"],
-      ],
+      order: [["id", "DESC"]],
     });
 
     return services;
