@@ -34,7 +34,12 @@ export const ServiceModal = ({
     withPagination: false,
   };
 
-  const { handleEditSubmitServices, handleSubmitServices } = useServices({
+  const {
+    handleEditSubmitServices,
+    handleSubmitServices,
+    createServiceLoading,
+    editServiceLoading,
+  } = useServices({
     setServiceInfo,
     setShowServiceModal,
     onClose,
@@ -110,18 +115,20 @@ export const ServiceModal = ({
     const { delivery_date, total } = serviceInfo;
     return !delivery_date || !total;
   }, [serviceInfo]);
+  const isEditing = Boolean(serviceInfo?.id);
+  const isSubmitting = isEditing ? editServiceLoading : createServiceLoading;
 
   return (
-    <Overlay onClick={onClose}>
+    <Overlay onClick={() => !isSubmitting && onClose()}>
       <Modal onClick={(e) => e.stopPropagation()}>
         <Header>
-          <Title>{serviceInfo?.id ? "Editar servicio" : "Nuevo servicio"}</Title>
-          <CloseButton onClick={onClose} aria-label="Cerrar">
+          <Title>{isEditing ? "Editar servicio" : "Nuevo servicio"}</Title>
+          <CloseButton onClick={onClose} aria-label="Cerrar" disabled={isSubmitting}>
             ×
           </CloseButton>
         </Header>
 
-        <Form onSubmit={serviceInfo?.id ? handleEditSubmit : handleSubmit}>
+        <Form onSubmit={isEditing ? handleEditSubmit : handleSubmit}>
           <Field>
             <Label>Nombre</Label>
             <Input
@@ -189,11 +196,11 @@ export const ServiceModal = ({
           </PaymentSelector>
 
           <Actions>
-            <CancelButton type="button" onClick={onClose}>
+            <CancelButton type="button" onClick={onClose} disabled={isSubmitting}>
               Cancelar
             </CancelButton>
-            <SubmitButton type="submit" disabled={isDisabledFields}>
-              Guardar
+            <SubmitButton type="submit" disabled={isDisabledFields || isSubmitting}>
+              {isSubmitting ? "Guardando..." : "Guardar"}
             </SubmitButton>
           </Actions>
         </Form>
@@ -254,6 +261,11 @@ const CloseButton = styled.button`
   border-radius: 10px;
   color: ${TOKENS.textSoft};
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 `;
 
 const Form = styled.form`
@@ -354,6 +366,11 @@ const CancelButton = styled(ButtonBase)`
   border: 1px solid ${TOKENS.border};
   background: #fff;
   color: ${TOKENS.textStrong};
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 `;
 
 const SubmitButton = styled(ButtonBase)`

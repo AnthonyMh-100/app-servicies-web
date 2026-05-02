@@ -13,6 +13,9 @@ import { DEFAULT_PAGE_SIZE } from "../../utils/constants";
 import { useAuthentication } from "../../context/AuthContext";
 import { useState } from "react";
 
+const sortServicesByIdDesc = (services = []) =>
+  [...services].sort((a, b) => Number(b?.id || 0) - Number(a?.id || 0));
+
 export const useServices = ({
   dateFilter = "",
   setServiceInfo = () => {},
@@ -85,7 +88,9 @@ export const useServices = ({
     },
   });
 
-  const [createService] = useMutation(CREATE_SERVICE, {
+  const [createService, { loading: createServiceLoading }] = useMutation(
+    CREATE_SERVICE,
+    {
     onCompleted: () => {
       setServiceInfo({});
       setShowServiceModal(false);
@@ -107,7 +112,7 @@ export const useServices = ({
         query: SERVICES,
         variables: variablesQuery,
         data: {
-          services: [newService, ...existing.services],
+          services: sortServicesByIdDesc([newService, ...existing.services]),
         },
       });
 
@@ -115,7 +120,9 @@ export const useServices = ({
     },
   });
 
-  const [editService] = useMutation(EDIT_SERVICE, {
+  const [editService, { loading: editServiceLoading }] = useMutation(
+    EDIT_SERVICE,
+    {
     onCompleted: () => {
       setServiceInfo({});
       setShowServiceModal(false);
@@ -133,15 +140,15 @@ export const useServices = ({
 
       if (!existing) return;
 
-      const filteredServices = existing.services.filter(
-        (service) => service.id !== updatedService.id,
+      const updatedServices = existing.services.map((service) =>
+        service.id === updatedService.id ? updatedService : service,
       );
 
       cache.writeQuery({
         query: SERVICES,
         variables: variablesQuery,
         data: {
-          services: [updatedService, ...filteredServices],
+          services: sortServicesByIdDesc(updatedServices),
         },
       });
       cache.evict({ fieldName: "earnings" });
@@ -245,6 +252,8 @@ export const useServices = ({
     isError,
     paginatedData,
     observeIntersection,
+    createServiceLoading,
+    editServiceLoading,
     servicesData: servicesData?.services || [],
     servicesLoading,
     servicesError,
