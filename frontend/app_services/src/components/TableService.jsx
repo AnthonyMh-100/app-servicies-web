@@ -10,11 +10,7 @@ const MOBILE_KEYS = {
   actions: "Acciones",
 };
 
-export const TableService = ({
-  columns = [],
-  data = [],
-  observeIntersection = () => {},
-}) => {
+export const TableService = ({ columns = [], data = [] }) => {
   if (!data?.length) {
     return (
       <EmptyStateWrapper>
@@ -38,13 +34,13 @@ export const TableService = ({
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => {
-              const isLast = index === data.length - 1;
-
+            {data.map((row) => {
               return (
-                <tr key={row.id} ref={isLast ? observeIntersection : null}>
+                <tr key={row.id}>
                   {columns?.map(({ key, render }) => (
-                    <td key={`${row.id}-${key}`}>{render ? render(row) : row[key]}</td>
+                    <td key={`${row.id}-${key}`}>
+                      {render ? render(row) : row[key]}
+                    </td>
                   ))}
                 </tr>
               );
@@ -54,11 +50,9 @@ export const TableService = ({
       </DesktopTableWrapper>
 
       <MobileCards>
-        {data.map((row, index) => {
-          const isLast = index === data.length - 1;
-
+        {data.map((row) => {
           return (
-            <MobileCard key={`mobile-${row.id}`} ref={isLast ? observeIntersection : null}>
+            <MobileCard key={`mobile-${row.id}`}>
               {columns
                 .filter(({ key }) => key !== "id")
                 .map(({ key, render }) => (
@@ -114,6 +108,7 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   min-width: 920px;
+  min-height: 500px;
 
   thead {
     background: #f7fafd;

@@ -94,11 +94,20 @@ export const History = ({ dateFilter, setDateFilter }) => {
     });
   }, [historyServices, selectedFilter, search]);
 
-  const { paginatedData: pagedHistoryServices, observeIntersection } =
-    usePagedLoad({
-      data: filteredHistory,
-      pageSize: DEFAULT_PAGE_SIZE,
-    });
+  const {
+    paginatedData: pagedHistoryServices,
+    canGoNext,
+    canGoPrev,
+    currentPage,
+    goToNextPage,
+    goToPrevPage,
+    loadedItemsCount,
+    totalItemsCount,
+    totalPages,
+  } = usePagedLoad({
+    data: filteredHistory,
+    pageSize: DEFAULT_PAGE_SIZE,
+  });
 
   const groupedEvents = useMemo(() => {
     return pagedHistoryServices.reduce((acc, service) => {
@@ -196,16 +205,12 @@ export const History = ({ dateFilter, setDateFilter }) => {
             <Group key={groupLabel}>
               <GroupTitle>{groupLabel}</GroupTitle>
 
-              {events.map((service, index) => {
+              {events.map((service) => {
                 const isExpanded = expandedHistoryIds.has(service.id);
                 const payments = service.payments || [];
-                const isLastGroupItem = index === events.length - 1;
 
                 return (
-                  <HistoryItem
-                    key={`history-${service.id}`}
-                    ref={isLastGroupItem ? observeIntersection : null}
-                  >
+                  <HistoryItem key={`history-${service.id}`}>
                     <ItemTop>
                       <LeftBlock>
                         <EventIcon $paid={Boolean(service.isCompleted)}>
@@ -290,6 +295,28 @@ export const History = ({ dateFilter, setDateFilter }) => {
 
         {historyError && (
           <ErrorMessage>No se pudo cargar el historial para esta fecha.</ErrorMessage>
+        )}
+
+        {!historyLoading && !!totalItemsCount && !!totalPages && (
+          <PaginationRow>
+            <PaginationMeta>
+              Mostrando {loadedItemsCount} de {totalItemsCount}
+            </PaginationMeta>
+
+            <PaginationControls>
+              <PageButton type="button" disabled={!canGoPrev} onClick={goToPrevPage}>
+                Anterior
+              </PageButton>
+
+              <PageIndicator>
+                Página {currentPage} de {totalPages}
+              </PageIndicator>
+
+              <PageButton type="button" disabled={!canGoNext} onClick={goToNextPage}>
+                Siguiente
+              </PageButton>
+            </PaginationControls>
+          </PaginationRow>
         )}
       </FeedPanel>
 
@@ -472,6 +499,53 @@ const FeedTitle = styled.h3`
 `;
 
 const FeedMeta = styled.span`
+  font-size: 12px;
+  color: ${TOKENS.textSoft};
+`;
+
+const PaginationMeta = styled.span`
+  font-size: 12px;
+  color: ${TOKENS.textSoft};
+`;
+
+const PaginationRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const PaginationControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const PageButton = styled.button`
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid ${TOKENS.border};
+  background: #fff;
+  color: ${TOKENS.textStrong};
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: #c9dceb;
+    color: ${TOKENS.accent};
+    background: #f7fbff;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+`;
+
+const PageIndicator = styled.span`
   font-size: 12px;
   color: ${TOKENS.textSoft};
 `;

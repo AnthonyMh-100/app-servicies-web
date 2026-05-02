@@ -5,7 +5,6 @@ export const KEYS_FILTERS = {
 };
 
 export const COLUMNS_SERVICES = [
-  { key: "id", label: "N°" },
   { key: "name", label: "Nombre" },
   { key: "description", label: "Descripción" },
   { key: "delivery_date", label: "Fecha de Entrega" },

@@ -138,7 +138,17 @@ export const Services = ({ dateFilter, setDateFilter }) => {
     });
   }, [servicesData, selectedFilter, search]);
 
-  const { paginatedData: pagedServices, observeIntersection } = usePagedLoad({
+  const {
+    paginatedData: pagedServices,
+    canGoNext,
+    canGoPrev,
+    currentPage,
+    goToNextPage,
+    goToPrevPage,
+    loadedItemsCount,
+    totalItemsCount,
+    totalPages,
+  } = usePagedLoad({
     data: servicesFormatted,
     pageSize: 6,
   });
@@ -210,8 +220,28 @@ export const Services = ({ dateFilter, setDateFilter }) => {
         <TableService
           columns={columnsFormatted}
           data={pagedServices}
-          observeIntersection={observeIntersection}
         />
+        {!!totalItemsCount && !!totalPages && (
+          <PaginationRow>
+            <PaginationMeta>
+              Mostrando {loadedItemsCount} de {totalItemsCount}
+            </PaginationMeta>
+
+            <PaginationControls>
+              <PageButton type="button" disabled={!canGoPrev} onClick={goToPrevPage}>
+                Anterior
+              </PageButton>
+
+              <PageIndicator>
+                Página {currentPage} de {totalPages}
+              </PageIndicator>
+
+              <PageButton type="button" disabled={!canGoNext} onClick={goToNextPage}>
+                Siguiente
+              </PageButton>
+            </PaginationControls>
+          </PaginationRow>
+        )}
       </TablePanel>
 
       {showInformative && (
@@ -479,6 +509,53 @@ const TableCount = styled.span`
   border: 1px solid #e6edf4;
   border-radius: 999px;
   padding: 4px 9px;
+`;
+
+const PaginationMeta = styled.span`
+  font-size: 12px;
+  color: ${TOKENS.textSoft};
+`;
+
+const PaginationRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const PaginationControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const PageButton = styled.button`
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid ${TOKENS.border};
+  background: #fff;
+  color: ${TOKENS.textStrong};
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: #c9dceb;
+    color: ${TOKENS.accent};
+    background: #f7fbff;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+`;
+
+const PageIndicator = styled.span`
+  font-size: 12px;
+  color: ${TOKENS.textSoft};
 `;
 
 const TextDescription = styled.button`
